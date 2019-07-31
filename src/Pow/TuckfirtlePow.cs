@@ -127,20 +127,119 @@ namespace Tuckfirtle.Core.Pow
      *
      * Finally, take the new pow data found and perform a SHA 256 to get the final POW value.
      */
+
+    /// <summary>
+    /// Class containing Tuckfirtle proof of work algorithm.
+    /// </summary>
     public class TuckfirtlePow
     {
-        /// <summary>
-        /// <para>The size of the scratchpad.</para>
-        /// </summary>
-        /// <remarks>The size of the scratchpad must be multiples of 32 bytes long.</remarks>
         private const int ScratchpadSize = 2 * 32 * 1024;
 
-        /// <summary>
-        /// <para>The amount of round needed for the memory loop.</para>
-        /// </summary>
         private const int MemoryLoopRound = 1;
 
-        public static unsafe byte[] GetPowValue(string jsonData)
+        /// <summary>
+        /// Compute the proof of work value with the block data.
+        /// </summary>
+        /// <param name="jsonData">Block data to compute.</param>
+        /// <returns>The POW value in little endian format.</returns>
+        /// <remarks>This is for general usage. Use <see cref="GetPowValueUnsafe" /> for performance.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="jsonData"/> is null.</exception>
+        public static byte[] GetPowValue(string jsonData)
+        {
+            var powData = new byte[144];
+            var aesKey = new byte[32];
+            var aesIv = new byte[16];
+            var aesData = new byte[32];
+            var xorKey = new byte[32];
+            var addressLocation = new byte[17];
+            var scratchpad = new byte[ScratchpadSize];
+
+            // Initialize powData 
+            var dataBytes = Encoding.UTF8.GetBytes(jsonData);
+
+            using (var sha = new SHA256Managed())
+                Buffer.BlockCopy(sha.ComputeHash(dataBytes), 0, powData, 0, 32);
+
+            using (var sha = new SHA384Managed())
+                Buffer.BlockCopy(sha.ComputeHash(dataBytes), 0, powData, 32, 48);
+
+            using (var sha = new SHA512Managed())
+                Buffer.BlockCopy(sha.ComputeHash(dataBytes), 0, powData, 80, 64);
+
+            // Initialize aesKey, aesIv and aesData.
+            XorBytesRollOver(powData, aesKey, 48, 32, 80, 16);
+            XorBytes(aesKey, aesIv, 0, 16, 16);
+            XorBytesRollOver(powData, aesData, 96, 32, 128, 16);
+
+            // Initialize addressLocation
+            addressLocation[16] = 0;
+
+            // Initialize xorKey.
+            XorBytesRollOver(powData, xorKey, 0, 32, 32, 16);
+
+            using (var aes = new AesManaged())
+            {
+                aes.Key = aesKey;
+                aes.IV = aesIv;
+                aes.Padding = PaddingMode.None;
+
+                var aesEncryption = aes.CreateEncryptor();
+
+                for (var i = 0; i < ScratchpadSize; i += 32)
+                {
+                    aesData = aesEncryption.TransformFinalBlock(aesData, 0, 32);
+                    Buffer.BlockCopy(aesData, 0, scratchpad, i, 32);
+                }
+            }
+
+            for (var round = 0; round < MemoryLoopRound; round++)
+            {
+                for (var i = 0; i < ScratchpadSize; i += 16)
+                {
+                    Buffer.BlockCopy(scratchpad, i, addressLocation, 0, 16);
+
+                    var scratchPadOffset = (int) (new BigInteger(addressLocation) % ScratchpadSize);
+
+                    for (var j = 0; j < 32; j++)
+                    {
+                        scratchpad[scratchPadOffset] = (byte) (scratchpad[scratchPadOffset] ^ xorKey[j]);
+                        scratchPadOffset++;
+
+                        if (scratchPadOffset == ScratchpadSize)
+                            scratchPadOffset = 0;
+                    }
+                }
+            }
+
+            for (var i = 0; i < 144; i += 16)
+            {
+                Buffer.BlockCopy(powData, i, addressLocation, 0, 16);
+
+                var scratchPadOffset = (int) (new BigInteger(addressLocation) % ScratchpadSize);
+
+                for (var j = 0; j < 16; j++)
+                {
+                    powData[i + j] = (byte) (powData[i + j] ^ scratchpad[scratchPadOffset]);
+                    scratchPadOffset++;
+
+                    if (scratchPadOffset == ScratchpadSize)
+                        scratchPadOffset = 0;
+                }
+            }
+
+            using (var sha256 = new SHA256Managed())
+                return sha256.ComputeHash(powData);
+        }
+
+        /// <summary>
+        /// Compute the proof of work value with the block data.
+        /// </summary>
+        /// <param name="jsonData">Block data to compute.</param>
+        /// <returns>The POW value in little endian format.</returns>
+        /// <remarks>This is optimized for performance by using unsafe pointers. Use <see cref="GetPowValue" /> for general usage.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="jsonData"/> is null.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
+        public static unsafe byte[] GetPowValueUnsafe(string jsonData)
         {
             var powData = new byte[144];
             var aesKey = new byte[32];
@@ -256,6 +355,12 @@ namespace Tuckfirtle.Core.Pow
             }
         }
 
+        private static void XorBytes(byte[] srcArray, byte[] destArray, int dataOffset, int dataLength, int xorKeyOffset)
+        {
+            for (var i = 0; i < dataLength; i++)
+                destArray[i] = (byte) (srcArray[dataOffset + i] ^ srcArray[xorKeyOffset + i]);
+        }
+
         private static unsafe void XorBytes(byte* srcArrayPtr, byte* destArrayPtr, int dataOffset, int dataLength, int xorKeyOffset)
         {
             var dataByteArrayPtr = srcArrayPtr + dataOffset;
@@ -264,6 +369,19 @@ namespace Tuckfirtle.Core.Pow
 
             for (var i = 0; i < dataLength; i++)
                 *destByteArrayPtr++ = (byte) (*dataByteArrayPtr++ ^ *xorKeyByteArrayPtr++);
+        }
+
+        private static void XorBytesRollOver(byte[] srcArray, byte[] destArray, int dataOffset, int dataLength, int xorKeyOffset, int xorKeyLength)
+        {
+            var xorIndex = 0;
+
+            for (var i = 0; i < dataLength; i++)
+            {
+                destArray[i] = (byte) (srcArray[dataOffset + i] ^ srcArray[xorKeyOffset + xorIndex++]);
+
+                if (xorIndex == xorKeyLength)
+                    xorIndex = 0;
+            }
         }
 
         private static unsafe void XorBytesRollOver(byte* srcArrayPtr, byte* destArrayPtr, int dataOffset, int dataLength, int xorKeyOffset, int xorKeyLength)
