@@ -144,7 +144,7 @@ namespace Tuckfirtle.Core.Pow
         /// <returns>The POW value in little endian format.</returns>
         /// <remarks>This is for general usage. Use <see cref="GetPowValueUnsafe" /> for performance.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="jsonData" /> is null.</exception>
-        public static byte[] GetPowValue(string jsonData)
+        public static BigInteger GetPowValue(string jsonData)
         {
             var powData = new byte[144];
             var dataBytes = Encoding.UTF8.GetBytes(jsonData);
@@ -225,8 +225,18 @@ namespace Tuckfirtle.Core.Pow
                 }
             }
 
-            using (var sha256 = new SHA256Managed())
-                return sha256.ComputeHash(powData);
+            using (var sha = new SHA256Managed())
+            {
+                var powValueBytes = sha.ComputeHash(powData);
+                var powValueBytesLength = powValueBytes.Length;
+
+                var powValueUnsignedBytes = new byte[powValueBytesLength + 1];
+                powValueUnsignedBytes[powValueBytesLength] = 0;
+
+                Buffer.BlockCopy(powValueBytes, 0, powValueUnsignedBytes, 0, powValueBytesLength);
+
+                return new BigInteger(powValueUnsignedBytes);
+            }
         }
 
         /// <summary>
@@ -237,7 +247,7 @@ namespace Tuckfirtle.Core.Pow
         /// <remarks>This is optimized for performance by using unsafe pointers. Use <see cref="GetPowValue" /> for general usage.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="jsonData" /> is null.</exception>
         /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
-        public static unsafe byte[] GetPowValueUnsafe(string jsonData)
+        public static unsafe BigInteger GetPowValueUnsafe(string jsonData)
         {
             var powData = new byte[144];
 
@@ -364,8 +374,21 @@ namespace Tuckfirtle.Core.Pow
                     Marshal.FreeHGlobal(scratchpadIntPtr);
                 }
 
-                using (var sha256 = new SHA256Managed())
-                    return sha256.ComputeHash(powData);
+                using (var sha = new SHA256Managed())
+                {
+                    var powValueBytes = sha.ComputeHash(powData);
+                    var powValueBytesLength = powValueBytes.Length;
+
+                    var powValueUnsignedBytes = new byte[powValueBytesLength + 1];
+
+                    fixed (byte* powValueBytesPtr = powValueBytes, powValueUnsignedBytesPtr = powValueUnsignedBytes)
+                    {
+                        *(powValueUnsignedBytesPtr + powValueBytesLength) = 0;
+                        Buffer.MemoryCopy(powValueBytesPtr, powValueUnsignedBytesPtr, powValueBytesLength, powValueBytesLength);
+
+                        return new BigInteger(powValueUnsignedBytes);
+                    }
+                }
             }
         }
 
