@@ -31,9 +31,9 @@ namespace Tuckfirtle.Core.Utility
 
                 for (var i = 0; i < MaxDifficultyByteSize; i++)
                     *biggestPowValueBytePtr++ = byte.MaxValue;
-            }
 
-            MaxDifficultyValue = new BigInteger(biggestPowValue);
+                MaxDifficultyValue = new BigInteger(biggestPowValue);
+            }
         }
 
         /// <summary>

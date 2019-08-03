@@ -133,10 +133,6 @@ namespace Tuckfirtle.Core.Pow
     /// </summary>
     public class TuckfirtlePow
     {
-        private const int ScratchpadSize = 2 * 32 * 1024;
-
-        private const int MemoryLoopRound = 1;
-
         /// <summary>
         /// Compute the proof of work value with the block data.
         /// </summary>
@@ -158,7 +154,7 @@ namespace Tuckfirtle.Core.Pow
             using (var sha = new SHA512Managed())
                 Buffer.BlockCopy(sha.ComputeHash(dataBytes), 0, powData, 80, 64);
 
-            var scratchpad = new byte[ScratchpadSize];
+            var scratchpad = new byte[GlobalSettings.TuckfirtlePowScratchpadSize];
 
             using (var aes = new AesManaged())
             {
@@ -177,7 +173,7 @@ namespace Tuckfirtle.Core.Pow
 
                 XorBytesRollOver(powData, aesData, 96, 32, 128, 16);
 
-                for (var i = 0; i < ScratchpadSize; i += 32)
+                for (var i = 0; i < GlobalSettings.TuckfirtlePowScratchpadSize; i += 32)
                 {
                     aesData = aesEncryption.TransformFinalBlock(aesData, 0, 32);
                     Buffer.BlockCopy(aesData, 0, scratchpad, i, 32);
@@ -190,20 +186,20 @@ namespace Tuckfirtle.Core.Pow
             var addressLocation = new byte[17];
             addressLocation[16] = 0;
 
-            for (var round = 0; round < MemoryLoopRound; round++)
+            for (var round = 0; round < GlobalSettings.TuckfirtlePowMemoryLoopRound; round++)
             {
-                for (var i = 0; i < ScratchpadSize; i += 16)
+                for (var i = 0; i < GlobalSettings.TuckfirtlePowScratchpadSize; i += 16)
                 {
                     Buffer.BlockCopy(scratchpad, i, addressLocation, 0, 16);
-
-                    var scratchPadOffset = (int) (new BigInteger(addressLocation) % ScratchpadSize);
+                    
+                    var scratchPadOffset = (ulong) (new BigInteger(addressLocation) % GlobalSettings.TuckfirtlePowScratchpadSize);
 
                     for (var j = 0; j < 32; j++)
                     {
                         scratchpad[scratchPadOffset] = (byte) (scratchpad[scratchPadOffset] ^ xorKey[j]);
                         scratchPadOffset++;
 
-                        if (scratchPadOffset == ScratchpadSize)
+                        if (scratchPadOffset == GlobalSettings.TuckfirtlePowScratchpadSize)
                             scratchPadOffset = 0;
                     }
                 }
@@ -213,14 +209,14 @@ namespace Tuckfirtle.Core.Pow
             {
                 Buffer.BlockCopy(powData, i, addressLocation, 0, 16);
 
-                var scratchPadOffset = (int) (new BigInteger(addressLocation) % ScratchpadSize);
+                var scratchPadOffset = (int) (new BigInteger(addressLocation) % GlobalSettings.TuckfirtlePowScratchpadSize);
 
                 for (var j = 0; j < 16; j++)
                 {
                     powData[i + j] = (byte) (powData[i + j] ^ scratchpad[scratchPadOffset]);
                     scratchPadOffset++;
 
-                    if (scratchPadOffset == ScratchpadSize)
+                    if (scratchPadOffset == GlobalSettings.TuckfirtlePowScratchpadSize)
                         scratchPadOffset = 0;
                 }
             }
@@ -272,8 +268,8 @@ namespace Tuckfirtle.Core.Pow
                     fixed (byte* resultPtr = sha.ComputeHash(dataBytes))
                         Buffer.MemoryCopy(resultPtr, powDataPtr + 80, 64, 64);
                 }
-
-                var scratchpadIntPtr = Marshal.AllocHGlobal(ScratchpadSize);
+                
+                var scratchpadIntPtr = Marshal.AllocHGlobal(GlobalSettings.TuckfirtlePowScratchpadSize);
                 var scratchpadPtr = (byte*) scratchpadIntPtr;
 
                 try
@@ -297,7 +293,7 @@ namespace Tuckfirtle.Core.Pow
                             var aesEncryption = aes.CreateEncryptor();
                             var currentAesData = aesData;
 
-                            for (var i = 0; i < ScratchpadSize; i += 32)
+                            for (var i = 0; i < GlobalSettings.TuckfirtlePowScratchpadSize; i += 32)
                             {
                                 currentAesData = aesEncryption.TransformFinalBlock(currentAesData, 0, 32);
 
@@ -320,14 +316,14 @@ namespace Tuckfirtle.Core.Pow
                         {
                             XorBytesRollOver(powDataPtr, xorKeyPtr, 0, 32, 32, 16);
 
-                            for (var round = 0; round < MemoryLoopRound; round++)
+                            for (var round = 0; round < GlobalSettings.TuckfirtlePowMemoryLoopRound; round++)
                             {
-                                for (var i = 0; i < ScratchpadSize; i += 16)
+                                for (var i = 0; i < GlobalSettings.TuckfirtlePowScratchpadSize; i += 16)
                                 {
                                     Buffer.MemoryCopy(scratchpadPtr + i, addressLocationPtr, 16, 16);
 
                                     var xorKeyByteArrayPtr = xorKeyPtr;
-                                    var scratchPadOffset = (int) (new BigInteger(addressLocation) % ScratchpadSize);
+                                    var scratchPadOffset = (int) (new BigInteger(addressLocation) % GlobalSettings.TuckfirtlePowScratchpadSize);
 
                                     for (var j = 0; j < 32; j++)
                                     {
@@ -336,7 +332,7 @@ namespace Tuckfirtle.Core.Pow
                                         *scratchpadByteArrayPtr = (byte) (*scratchpadByteArrayPtr ^ *xorKeyByteArrayPtr++);
                                         scratchPadOffset++;
 
-                                        if (scratchPadOffset == ScratchpadSize)
+                                        if (scratchPadOffset == GlobalSettings.TuckfirtlePowScratchpadSize)
                                             scratchPadOffset = 0;
                                     }
                                 }
@@ -353,7 +349,7 @@ namespace Tuckfirtle.Core.Pow
                         {
                             Buffer.MemoryCopy(powDataByteArrayPtr, addressLocationPtr, 16, 16);
 
-                            var scratchPadOffset = (int) (new BigInteger(addressLocation) % ScratchpadSize);
+                            var scratchPadOffset = (int) (new BigInteger(addressLocation) % GlobalSettings.TuckfirtlePowScratchpadSize);
 
                             for (var j = 0; j < 16; j++)
                             {
@@ -363,7 +359,7 @@ namespace Tuckfirtle.Core.Pow
                                 powDataByteArrayPtr++;
                                 scratchPadOffset++;
 
-                                if (scratchPadOffset == ScratchpadSize)
+                                if (scratchPadOffset == GlobalSettings.TuckfirtlePowScratchpadSize)
                                     scratchPadOffset = 0;
                             }
                         }
