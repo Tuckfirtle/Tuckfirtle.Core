@@ -6,6 +6,21 @@
     public static class CoreSettings
     {
         /// <summary>
+        /// Coin full name.
+        /// </summary>
+        public const string CoinFullName = "Tuckfirtle";
+
+        /// <summary>
+        /// Coin ticker.
+        /// </summary>
+        public const string CoinTicker = "TF";
+
+        /// <summary>
+        /// Coin atomic unit.
+        /// </summary>
+        public const ulong CoinAtomicUnit = 100000000;
+
+        /// <summary>
         /// Current block version.
         /// </summary>
         public const int BlockVersion = 1;
