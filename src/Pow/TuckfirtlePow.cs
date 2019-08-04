@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using Tuckfirtle.Core.Utility;
 
 namespace Tuckfirtle.Core.Pow
 {
@@ -145,61 +146,45 @@ namespace Tuckfirtle.Core.Pow
             var powData = new byte[144];
             var dataBytes = Encoding.UTF8.GetBytes(jsonData);
 
-            using (var sha = new SHA256Managed())
-                Buffer.BlockCopy(sha.ComputeHash(dataBytes), 0, powData, 0, 32);
+            HashAlgorithmUtility.Sha256ComputeHash(dataBytes, powData);
+            HashAlgorithmUtility.Sha384ComputeHash(dataBytes, powData, 32);
+            HashAlgorithmUtility.Sha512ComputeHash(dataBytes, powData, 80);
 
-            using (var sha = new SHA384Managed())
-                Buffer.BlockCopy(sha.ComputeHash(dataBytes), 0, powData, 32, 48);
+            var scratchpad = new byte[CoreSettings.TuckfirtlePowScratchpadSize];
 
-            using (var sha = new SHA512Managed())
-                Buffer.BlockCopy(sha.ComputeHash(dataBytes), 0, powData, 80, 64);
+            var aesKey = XorBytesRollOver(powData, 48, 32, 80, 16);
+            var aesIv = XorBytes(aesKey, 0, 16, 16);
 
-            var scratchpad = new byte[GlobalSettings.TuckfirtlePowScratchpadSize];
-
-            using (var aes = new AesManaged())
+            SymmetricAlgorithmUtility.Aes256Encrypt(aesIv, aesKey, powData, scratchpad, (cryptoTransform, powDataState, scratchpadState) =>
             {
-                var aesKey = new byte[32];
-                var aesIv = new byte[16];
+                var aesData = XorBytesRollOver(powDataState, 96, 32, 128, 16);
 
-                XorBytesRollOver(powData, aesKey, 48, 32, 80, 16);
-                XorBytes(aesKey, aesIv, 0, 16, 16);
-
-                aes.Key = aesKey;
-                aes.IV = aesIv;
-                aes.Padding = PaddingMode.None;
-
-                var aesEncryption = aes.CreateEncryptor();
-                var aesData = new byte[32];
-
-                XorBytesRollOver(powData, aesData, 96, 32, 128, 16);
-
-                for (var i = 0; i < GlobalSettings.TuckfirtlePowScratchpadSize; i += 32)
+                for (var i = 0; i < CoreSettings.TuckfirtlePowScratchpadSize; i += 32)
                 {
-                    aesData = aesEncryption.TransformFinalBlock(aesData, 0, 32);
-                    Buffer.BlockCopy(aesData, 0, scratchpad, i, 32);
+                    aesData = cryptoTransform.TransformFinalBlock(aesData, 0, 32);
+                    Buffer.BlockCopy(aesData, 0, scratchpadState, i, 32);
                 }
-            }
+            }, CipherMode.CBC, PaddingMode.None);
 
-            var xorKey = new byte[32];
-            XorBytesRollOver(powData, xorKey, 0, 32, 32, 16);
+            var xorKey = XorBytesRollOver(powData, 0, 32, 32, 16);
 
             var addressLocation = new byte[17];
             addressLocation[16] = 0;
 
-            for (var round = 0; round < GlobalSettings.TuckfirtlePowMemoryLoopRound; round++)
+            for (var round = 0; round < CoreSettings.TuckfirtlePowMemoryLoopRound; round++)
             {
-                for (var i = 0; i < GlobalSettings.TuckfirtlePowScratchpadSize; i += 16)
+                for (var i = 0; i < CoreSettings.TuckfirtlePowScratchpadSize; i += 16)
                 {
                     Buffer.BlockCopy(scratchpad, i, addressLocation, 0, 16);
-                    
-                    var scratchPadOffset = (ulong) (new BigInteger(addressLocation) % GlobalSettings.TuckfirtlePowScratchpadSize);
+
+                    var scratchPadOffset = (ulong) (new BigInteger(addressLocation) % CoreSettings.TuckfirtlePowScratchpadSize);
 
                     for (var j = 0; j < 32; j++)
                     {
                         scratchpad[scratchPadOffset] = (byte) (scratchpad[scratchPadOffset] ^ xorKey[j]);
                         scratchPadOffset++;
 
-                        if (scratchPadOffset == GlobalSettings.TuckfirtlePowScratchpadSize)
+                        if (scratchPadOffset == CoreSettings.TuckfirtlePowScratchpadSize)
                             scratchPadOffset = 0;
                     }
                 }
@@ -209,30 +194,24 @@ namespace Tuckfirtle.Core.Pow
             {
                 Buffer.BlockCopy(powData, i, addressLocation, 0, 16);
 
-                var scratchPadOffset = (int) (new BigInteger(addressLocation) % GlobalSettings.TuckfirtlePowScratchpadSize);
+                var scratchPadOffset = (int) (new BigInteger(addressLocation) % CoreSettings.TuckfirtlePowScratchpadSize);
 
                 for (var j = 0; j < 16; j++)
                 {
                     powData[i + j] = (byte) (powData[i + j] ^ scratchpad[scratchPadOffset]);
                     scratchPadOffset++;
 
-                    if (scratchPadOffset == GlobalSettings.TuckfirtlePowScratchpadSize)
+                    if (scratchPadOffset == CoreSettings.TuckfirtlePowScratchpadSize)
                         scratchPadOffset = 0;
                 }
             }
 
-            using (var sha = new SHA256Managed())
-            {
-                var powValueBytes = sha.ComputeHash(powData);
-                var powValueBytesLength = powValueBytes.Length;
+            var powValueUnsignedBytes = new byte[33];
+            powValueUnsignedBytes[32] = 0;
 
-                var powValueUnsignedBytes = new byte[powValueBytesLength + 1];
-                powValueUnsignedBytes[powValueBytesLength] = 0;
+            HashAlgorithmUtility.Sha256ComputeHash(powData, powValueUnsignedBytes);
 
-                Buffer.BlockCopy(powValueBytes, 0, powValueUnsignedBytes, 0, powValueBytesLength);
-
-                return new BigInteger(powValueUnsignedBytes);
-            }
+            return new BigInteger(powValueUnsignedBytes);
         }
 
         /// <summary>
@@ -251,56 +230,38 @@ namespace Tuckfirtle.Core.Pow
             {
                 var dataBytes = Encoding.UTF8.GetBytes(jsonData);
 
-                using (var sha = new SHA256Managed())
-                {
-                    fixed (byte* resultPtr = sha.ComputeHash(dataBytes))
-                        Buffer.MemoryCopy(resultPtr, powDataPtr, 32, 32);
-                }
+                HashAlgorithmUtility.Sha256ComputeHash(dataBytes, powDataPtr);
+                HashAlgorithmUtility.Sha384ComputeHash(dataBytes, powDataPtr, 32);
+                HashAlgorithmUtility.Sha512ComputeHash(dataBytes, powDataPtr, 80);
 
-                using (var sha = new SHA384Managed())
-                {
-                    fixed (byte* resultPtr = sha.ComputeHash(dataBytes))
-                        Buffer.MemoryCopy(resultPtr, powDataPtr + 32, 48, 48);
-                }
-
-                using (var sha = new SHA512Managed())
-                {
-                    fixed (byte* resultPtr = sha.ComputeHash(dataBytes))
-                        Buffer.MemoryCopy(resultPtr, powDataPtr + 80, 64, 64);
-                }
-                
-                var scratchpadIntPtr = Marshal.AllocHGlobal(GlobalSettings.TuckfirtlePowScratchpadSize);
+                var scratchpadIntPtr = Marshal.AllocHGlobal(CoreSettings.TuckfirtlePowScratchpadSize);
                 var scratchpadPtr = (byte*) scratchpadIntPtr;
 
                 try
                 {
-                    using (var aes = new AesManaged())
+                    var aesKey = new byte[32];
+                    var aesIv = new byte[16];
+                    var aesData = new byte[32];
+
+                    fixed (byte* aesKeyPtr = aesKey, aesIvPtr = aesIv, aesDataPtr = aesData)
                     {
-                        var aesKey = new byte[32];
-                        var aesIv = new byte[16];
-                        var aesData = new byte[32];
+                        XorBytesRollOver(powDataPtr, aesKeyPtr, 48, 32, 80, 16);
+                        XorBytes(aesKeyPtr, aesIvPtr, 0, 16, 16);
+                        XorBytesRollOver(powDataPtr, aesDataPtr, 96, 32, 128, 16);
 
-                        fixed (byte* aesKeyPtr = aesKey, aesIvPtr = aesIv, aesDataPtr = aesData)
+                        SymmetricAlgorithmUtility.Aes256Encrypt(aesIv, aesKey, aesData, scratchpadIntPtr, (cryptoTransform, aesDataState, scratchpadIntPtrState) =>
                         {
-                            XorBytesRollOver(powDataPtr, aesKeyPtr, 48, 32, 80, 16);
-                            XorBytes(aesKeyPtr, aesIvPtr, 0, 16, 16);
-                            XorBytesRollOver(powDataPtr, aesDataPtr, 96, 32, 128, 16);
+                            var currentAesData = aesDataState;
+                            var scratchpadPtrState = (byte*) scratchpadIntPtrState;
 
-                            aes.Key = aesKey;
-                            aes.IV = aesIv;
-                            aes.Padding = PaddingMode.None;
-
-                            var aesEncryption = aes.CreateEncryptor();
-                            var currentAesData = aesData;
-
-                            for (var i = 0; i < GlobalSettings.TuckfirtlePowScratchpadSize; i += 32)
+                            for (var i = 0; i < CoreSettings.TuckfirtlePowScratchpadSize; i += 32)
                             {
-                                currentAesData = aesEncryption.TransformFinalBlock(currentAesData, 0, 32);
+                                currentAesData = cryptoTransform.TransformFinalBlock(currentAesData, 0, 32);
 
                                 fixed (byte* currentAesDataPtr = currentAesData)
-                                    Buffer.MemoryCopy(currentAesDataPtr, scratchpadPtr + i, 32, 32);
+                                    Buffer.MemoryCopy(currentAesDataPtr, scratchpadPtrState + i, 32, 32);
                             }
-                        }
+                        }, CipherMode.CBC, PaddingMode.None);
                     }
 
                     var addressLocation = new byte[17];
@@ -316,14 +277,14 @@ namespace Tuckfirtle.Core.Pow
                         {
                             XorBytesRollOver(powDataPtr, xorKeyPtr, 0, 32, 32, 16);
 
-                            for (var round = 0; round < GlobalSettings.TuckfirtlePowMemoryLoopRound; round++)
+                            for (var round = 0; round < CoreSettings.TuckfirtlePowMemoryLoopRound; round++)
                             {
-                                for (var i = 0; i < GlobalSettings.TuckfirtlePowScratchpadSize; i += 16)
+                                for (var i = 0; i < CoreSettings.TuckfirtlePowScratchpadSize; i += 16)
                                 {
                                     Buffer.MemoryCopy(scratchpadPtr + i, addressLocationPtr, 16, 16);
 
                                     var xorKeyByteArrayPtr = xorKeyPtr;
-                                    var scratchPadOffset = (int) (new BigInteger(addressLocation) % GlobalSettings.TuckfirtlePowScratchpadSize);
+                                    var scratchPadOffset = (int) (new BigInteger(addressLocation) % CoreSettings.TuckfirtlePowScratchpadSize);
 
                                     for (var j = 0; j < 32; j++)
                                     {
@@ -332,7 +293,7 @@ namespace Tuckfirtle.Core.Pow
                                         *scratchpadByteArrayPtr = (byte) (*scratchpadByteArrayPtr ^ *xorKeyByteArrayPtr++);
                                         scratchPadOffset++;
 
-                                        if (scratchPadOffset == GlobalSettings.TuckfirtlePowScratchpadSize)
+                                        if (scratchPadOffset == CoreSettings.TuckfirtlePowScratchpadSize)
                                             scratchPadOffset = 0;
                                     }
                                 }
@@ -349,7 +310,7 @@ namespace Tuckfirtle.Core.Pow
                         {
                             Buffer.MemoryCopy(powDataByteArrayPtr, addressLocationPtr, 16, 16);
 
-                            var scratchPadOffset = (int) (new BigInteger(addressLocation) % GlobalSettings.TuckfirtlePowScratchpadSize);
+                            var scratchPadOffset = (int) (new BigInteger(addressLocation) % CoreSettings.TuckfirtlePowScratchpadSize);
 
                             for (var j = 0; j < 16; j++)
                             {
@@ -359,7 +320,7 @@ namespace Tuckfirtle.Core.Pow
                                 powDataByteArrayPtr++;
                                 scratchPadOffset++;
 
-                                if (scratchPadOffset == GlobalSettings.TuckfirtlePowScratchpadSize)
+                                if (scratchPadOffset == CoreSettings.TuckfirtlePowScratchpadSize)
                                     scratchPadOffset = 0;
                             }
                         }
@@ -370,28 +331,26 @@ namespace Tuckfirtle.Core.Pow
                     Marshal.FreeHGlobal(scratchpadIntPtr);
                 }
 
-                using (var sha = new SHA256Managed())
+                var powValueUnsignedBytes = new byte[33];
+
+                fixed (byte* powValueUnsignedBytesPtr = powValueUnsignedBytes)
                 {
-                    var powValueBytes = sha.ComputeHash(powData);
-                    var powValueBytesLength = powValueBytes.Length;
+                    *(powValueUnsignedBytesPtr + 32) = 0;
+                    HashAlgorithmUtility.Sha256ComputeHash(powData, powValueUnsignedBytesPtr);
 
-                    var powValueUnsignedBytes = new byte[powValueBytesLength + 1];
-
-                    fixed (byte* powValueBytesPtr = powValueBytes, powValueUnsignedBytesPtr = powValueUnsignedBytes)
-                    {
-                        *(powValueUnsignedBytesPtr + powValueBytesLength) = 0;
-                        Buffer.MemoryCopy(powValueBytesPtr, powValueUnsignedBytesPtr, powValueBytesLength, powValueBytesLength);
-
-                        return new BigInteger(powValueUnsignedBytes);
-                    }
+                    return new BigInteger(powValueUnsignedBytes);
                 }
             }
         }
 
-        private static void XorBytes(byte[] srcArray, byte[] destArray, int dataOffset, int dataLength, int xorKeyOffset)
+        private static byte[] XorBytes(byte[] srcArray, int dataOffset, int dataLength, int xorKeyOffset)
         {
+            var destArray = new byte[dataLength];
+
             for (var i = 0; i < dataLength; i++)
                 destArray[i] = (byte) (srcArray[dataOffset + i] ^ srcArray[xorKeyOffset + i]);
+
+            return destArray;
         }
 
         private static unsafe void XorBytes(byte* srcArrayPtr, byte* destArrayPtr, int dataOffset, int dataLength, int xorKeyOffset)
@@ -404,8 +363,9 @@ namespace Tuckfirtle.Core.Pow
                 *destByteArrayPtr++ = (byte) (*dataByteArrayPtr++ ^ *xorKeyByteArrayPtr++);
         }
 
-        private static void XorBytesRollOver(byte[] srcArray, byte[] destArray, int dataOffset, int dataLength, int xorKeyOffset, int xorKeyLength)
+        private static byte[] XorBytesRollOver(byte[] srcArray, int dataOffset, int dataLength, int xorKeyOffset, int xorKeyLength)
         {
+            var destArray = new byte[dataLength];
             var xorIndex = 0;
 
             for (var i = 0; i < dataLength; i++)
@@ -415,6 +375,8 @@ namespace Tuckfirtle.Core.Pow
                 if (xorIndex == xorKeyLength)
                     xorIndex = 0;
             }
+
+            return destArray;
         }
 
         private static unsafe void XorBytesRollOver(byte* srcArrayPtr, byte* destArrayPtr, int dataOffset, int dataLength, int xorKeyOffset, int xorKeyLength)

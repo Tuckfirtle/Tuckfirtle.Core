@@ -1,9 +1,10 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Tuckfirtle.Core.Utility
 {
     /// <summary>
-    /// Class containing utility function for difficulty.
+    /// Utility class that contains all the difficulty functions.
     /// </summary>
     public static class DifficultyUtility
     {
@@ -41,6 +42,7 @@ namespace Tuckfirtle.Core.Utility
         /// </summary>
         /// <param name="difficulty">Difficulty value.</param>
         /// <returns>The target pow value.</returns>
+        /// <exception cref="DivideByZeroException"><paramref name="difficulty"/> is 0 (zero).</exception>
         public static BigInteger GetTargetPowValue(BigInteger difficulty)
         {
             return MaxDifficultyValue / difficulty;
@@ -51,6 +53,7 @@ namespace Tuckfirtle.Core.Utility
         /// </summary>
         /// <param name="targetPowValue">Target pow value.</param>
         /// <returns>The difficulty of the target pow value.</returns>
+        /// <exception cref="DivideByZeroException"><paramref name="targetPowValue"/> is 0 (zero).</exception>
         public static BigInteger GetDifficulty(BigInteger targetPowValue)
         {
             return MaxDifficultyValue / targetPowValue;
