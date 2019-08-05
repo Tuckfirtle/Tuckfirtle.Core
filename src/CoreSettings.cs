@@ -64,16 +64,21 @@ namespace Tuckfirtle.Core
         /// <summary>
         /// Peer to peer (P2P) default port.
         /// </summary>
-        public const ushort P2PDefaultPort = 0;
+        public const ushort P2PDefaultPort = 15080;
 
         /// <summary>
         /// Remote procedural call (RPC) default port.
         /// </summary>
-        public const ushort RPCDefaultPort = 0;
+        public const ushort RPCDefaultPort = 15081;
 
         /// <summary>
-        /// Unique network id for network communication.
+        /// Unique testnet network id for network communication.
         /// </summary>
-        public static Guid NetworkId = new Guid(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+        public static Guid TestnetNetworkId = new Guid(new byte[] { 84, 117, 99, 107, 102, 105, 114, 116, 108, 101, 32, 84, 101, 115, 116, 32 });
+
+        /// <summary>
+        /// Unique mainnet network id for network communication.
+        /// </summary>
+        public static Guid MainnetNetworkId = new Guid(new byte[] { 84, 117, 99, 107, 102, 105, 114, 116, 108, 101, 32, 77, 97, 105, 110, 32 });
     }
 }
