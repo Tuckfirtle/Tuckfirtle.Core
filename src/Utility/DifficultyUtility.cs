@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (C) 2019, The Tuckfirtle Developers
+// 
+// Please see the included LICENSE file for more information.
+
+using System;
 using System.Numerics;
 
 namespace Tuckfirtle.Core.Utility
@@ -18,7 +22,7 @@ namespace Tuckfirtle.Core.Utility
         /// <summary>
         /// Get the maximum difficulty value.
         /// </summary>
-        public static BigInteger MaxDifficultyValue { get; } 
+        public static BigInteger MaxDifficultyValue { get; }
 
         static unsafe DifficultyUtility()
         {
@@ -42,7 +46,7 @@ namespace Tuckfirtle.Core.Utility
         /// </summary>
         /// <param name="difficulty">Difficulty value.</param>
         /// <returns>The target pow value.</returns>
-        /// <exception cref="DivideByZeroException"><paramref name="difficulty"/> is 0 (zero).</exception>
+        /// <exception cref="DivideByZeroException"><paramref name="difficulty" /> is 0 (zero).</exception>
         public static BigInteger GetTargetPowValue(BigInteger difficulty)
         {
             return MaxDifficultyValue / difficulty;
@@ -53,7 +57,7 @@ namespace Tuckfirtle.Core.Utility
         /// </summary>
         /// <param name="targetPowValue">Target pow value.</param>
         /// <returns>The difficulty of the target pow value.</returns>
-        /// <exception cref="DivideByZeroException"><paramref name="targetPowValue"/> is 0 (zero).</exception>
+        /// <exception cref="DivideByZeroException"><paramref name="targetPowValue" /> is 0 (zero).</exception>
         public static BigInteger GetDifficulty(BigInteger targetPowValue)
         {
             return MaxDifficultyValue / targetPowValue;

@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (C) 2019, The Tuckfirtle Developers
+// 
+// Please see the included LICENSE file for more information.
+
+using System;
 using System.Security.Cryptography;
 
 namespace Tuckfirtle.Core.Utility
@@ -9,13 +13,13 @@ namespace Tuckfirtle.Core.Utility
     public static class SymmetricAlgorithmUtility
     {
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 128 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 128 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes128Encrypt(byte[] iv, byte[] key, Action<ICryptoTransform> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
@@ -24,14 +28,14 @@ namespace Tuckfirtle.Core.Utility
         }
 
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 128 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 128 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes128Encrypt<TState>(byte[] iv, byte[] key, TState state, Action<ICryptoTransform, TState> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
@@ -40,15 +44,15 @@ namespace Tuckfirtle.Core.Utility
         }
 
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 128 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 128 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="state2">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="state2">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes128Encrypt<TState, TState2>(byte[] iv, byte[] key, TState state, TState2 state2, Action<ICryptoTransform, TState, TState2> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
@@ -57,13 +61,13 @@ namespace Tuckfirtle.Core.Utility
         }
 
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 192 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 192 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes192Encrypt(byte[] iv, byte[] key, Action<ICryptoTransform> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
@@ -72,14 +76,14 @@ namespace Tuckfirtle.Core.Utility
         }
 
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 128 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 128 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes192Encrypt<TState>(byte[] iv, byte[] key, TState state, Action<ICryptoTransform, TState> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
@@ -88,15 +92,15 @@ namespace Tuckfirtle.Core.Utility
         }
 
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 128 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 128 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="state2">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="state2">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes192Encrypt<TState, TState2>(byte[] iv, byte[] key, TState state, TState2 state2, Action<ICryptoTransform, TState, TState2> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
@@ -105,13 +109,13 @@ namespace Tuckfirtle.Core.Utility
         }
 
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 192 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 192 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes256Encrypt(byte[] iv, byte[] key, Action<ICryptoTransform> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
@@ -120,14 +124,14 @@ namespace Tuckfirtle.Core.Utility
         }
 
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 128 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 128 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes256Encrypt<TState>(byte[] iv, byte[] key, TState state, Action<ICryptoTransform, TState> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
@@ -136,15 +140,15 @@ namespace Tuckfirtle.Core.Utility
         }
 
         /// <summary>
-        /// Encrypt using <see cref="Aes"/> algorithm with 128 key size.
+        /// Encrypt using <see cref="Aes" /> algorithm with 128 key size.
         /// </summary>
-        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="key">The secret key to use for the <see cref="Aes"/> algorithm.</param>
-        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="state2">The variable to pass into <paramref name="cryptoTransformAction"/>.</param>
-        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform"/> action.</param>
-        /// <param name="mode">The mode for operation of the <see cref="Aes"/> algorithm.</param>
-        /// <param name="padding">The padding mode used in the <see cref="Aes"/> algorithm.</param>
+        /// <param name="iv">The initialization vector (IV) to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="key">The secret key to use for the <see cref="Aes" /> algorithm.</param>
+        /// <param name="state">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="state2">The variable to pass into <paramref name="cryptoTransformAction" />.</param>
+        /// <param name="cryptoTransformAction">Delegate for <see cref="ICryptoTransform" /> action.</param>
+        /// <param name="mode">The mode for operation of the <see cref="Aes" /> algorithm.</param>
+        /// <param name="padding">The padding mode used in the <see cref="Aes" /> algorithm.</param>
         /// <exception cref="CryptographicException">The Windows security policy setting for FIPS is enabled.</exception>
         /// <exception cref="InvalidOperationException">This implementation is not part of the Windows Platform FIPS-validated cryptographic algorithms.</exception>
         public static void Aes256Encrypt<TState, TState2>(byte[] iv, byte[] key, TState state, TState2 state2, Action<ICryptoTransform, TState, TState2> cryptoTransformAction, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
