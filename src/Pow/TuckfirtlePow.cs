@@ -159,9 +159,10 @@ namespace Tuckfirtle.Core.Pow
             var aesKey = XorBytesRollOver(powData, 48, 32, 80, 16);
             var aesIv = XorBytes(aesKey, 0, 16, 16);
 
-            SymmetricAlgorithmUtility.Aes256Encrypt(aesIv, aesKey, powData, scratchpad, (cryptoTransform, powDataState, scratchpadState) =>
+            SymmetricAlgorithmUtility.Aes256Encrypt(aesIv, aesKey, (powData, scratchpad), (cryptoTransform, state) =>
             {
-                var aesData = XorBytesRollOver(powDataState, 96, 32, 128, 16);
+                var aesData = XorBytesRollOver(state.powData, 96, 32, 128, 16);
+                var scratchpadState = state.scratchpad;
 
                 for (var i = 0; i < CoreSettings.TuckfirtlePowScratchpadSize; i += 32)
                 {
@@ -253,10 +254,10 @@ namespace Tuckfirtle.Core.Pow
                         XorBytes(aesKeyPtr, aesIvPtr, 0, 16, 16);
                         XorBytesRollOver(powDataPtr, aesDataPtr, 96, 32, 128, 16);
 
-                        SymmetricAlgorithmUtility.Aes256Encrypt(aesIv, aesKey, aesData, scratchpadIntPtr, (cryptoTransform, aesDataState, scratchpadIntPtrState) =>
+                        SymmetricAlgorithmUtility.Aes256Encrypt(aesIv, aesKey, (aesData, scratchpadIntPtr), (cryptoTransform, state) =>
                         {
-                            var currentAesData = aesDataState;
-                            var scratchpadPtrState = (byte*) scratchpadIntPtrState;
+                            var currentAesData = state.aesData;
+                            var scratchpadPtrState = (byte*) state.scratchpadIntPtr;
 
                             for (var i = 0; i < CoreSettings.TuckfirtlePowScratchpadSize; i += 32)
                             {
