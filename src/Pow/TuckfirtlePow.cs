@@ -30,7 +30,6 @@ namespace Tuckfirtle.Core.Pow
      *
      * AES encryption function:
      * BlockSize = 128 bits
-     * FeedbackSize = 8
      * KeySize = 256 bits
      * Mode = CBC
      * Padding = None
