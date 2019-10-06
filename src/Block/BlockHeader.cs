@@ -10,7 +10,7 @@ using Tuckfirtle.Core.Utility;
 namespace Tuckfirtle.Core.Block
 {
     /// <summary>
-    /// Block header class that contains block header information.
+    /// Class containing block header information.
     /// </summary>
     public class BlockHeader
     {
