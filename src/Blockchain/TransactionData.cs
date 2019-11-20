@@ -2,7 +2,7 @@
 // 
 // Please see the included LICENSE file for more information.
 
-namespace Tuckfirtle.Core.Transaction
+namespace Tuckfirtle.Core.Blockchain
 {
     public class TransactionData
     {
@@ -17,23 +17,13 @@ namespace Tuckfirtle.Core.Transaction
         public string SenderAddress { get; set; }
 
         /// <summary>
-        /// Sender's kem key.
+        /// Sender's signature.
         /// </summary>
-        public string SenderKemKey { get; set; }
+        public string SenderSignature { get; set; }
 
         /// <summary>
         /// Receiver's address.
         /// </summary>
         public string ReceiverAddress { get; set; }
-
-        /// <summary>
-        /// Receiver's kem key.
-        /// </summary>
-        public string ReceiverKemKey { get; set; }
-
-        /// <summary>
-        /// Transaction data.
-        /// </summary>
-        public string TransactionEncryptedData { get; set; }
     }
 }

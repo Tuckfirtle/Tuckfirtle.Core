@@ -24,7 +24,7 @@ namespace Tuckfirtle.Core
         /// <summary>
         /// Coin atomic unit.
         /// </summary>
-        public const ulong CoinAtomicUnit = 100000000;
+        public const ulong CoinAtomicUnit = 100;
 
         /// <summary>
         /// Coin total supply in atomic unit. (TBD)

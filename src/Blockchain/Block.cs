@@ -3,16 +3,16 @@
 // Please see the included LICENSE file for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Numerics;
-using Newtonsoft.Json;
 using Tuckfirtle.Core.Utility;
 
-namespace Tuckfirtle.Core.Block
+namespace Tuckfirtle.Core.Blockchain
 {
     /// <summary>
-    /// Class containing block header information.
+    /// Class containing a blockchain block.
     /// </summary>
-    public class BlockHeader
+    public class Block
     {
         /// <summary>
         /// Block version.
@@ -27,7 +27,7 @@ namespace Tuckfirtle.Core.Block
         /// <summary>
         /// Block timestamp.
         /// </summary>
-        public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.Now;
+        public long Timestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
 
         /// <summary>
         /// Block nonce.
@@ -40,6 +40,11 @@ namespace Tuckfirtle.Core.Block
         public BigInteger TargetPowValue { get; set; } = DifficultyUtility.GetTargetPowValue(CoreSettings.GenesisBlockDifficulty);
 
         /// <summary>
+        /// Block hash.
+        /// </summary>
+        public string BlockHash { get; set; } = string.Empty;
+
+        /// <summary>
         /// Previous block hash.
         /// </summary>
         public string PreviousBlockHash { get; set; } = string.Empty;
@@ -49,13 +54,6 @@ namespace Tuckfirtle.Core.Block
         /// </summary>
         public string MerkleRootHash { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Convert block header to string representation.
-        /// </summary>
-        /// <returns>JSON string representation of block header.</returns>
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.None);
-        }
+        public List<Transaction> Transactions { get; set; }
     }
 }

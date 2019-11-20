@@ -4,12 +4,12 @@
 
 using System;
 
-namespace Tuckfirtle.Core.Transaction
+namespace Tuckfirtle.Core.Blockchain
 {
     /// <summary>
-    /// Class containing transaction header information.
+    /// Class containing a blockchain transaction.
     /// </summary>
-    public class TransactionHeader
+    public class Transaction
     {
         /// <summary>
         /// Transaction version.
@@ -19,7 +19,7 @@ namespace Tuckfirtle.Core.Transaction
         /// <summary>
         /// Transaction timestamp.
         /// </summary>
-        public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.Now;
+        public long Timestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
 
         /// <summary>
         /// Transaction input.
@@ -30,5 +30,10 @@ namespace Tuckfirtle.Core.Transaction
         /// Transaction output.
         /// </summary>
         public TransactionData[] Output { get; set; }
+
+        /// <summary>
+        /// Transaction hash.
+        /// </summary>
+        public string TransactionHash { get; set; }
     }
 }

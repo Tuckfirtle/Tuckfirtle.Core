@@ -107,31 +107,37 @@ namespace Tuckfirtle.Core.Utility
 
         private static void AesEncrypt(int keySize, byte[] iv, byte[] key, CipherMode mode, PaddingMode padding, Action<ICryptoTransform> cryptoTransformAction)
         {
-            using (var aes = new AesManaged())
+            using (var aes = new AesManaged
             {
-                aes.KeySize = keySize;
-                aes.IV = iv;
-                aes.Key = key;
-                aes.Mode = mode;
-                aes.Padding = padding;
-
+                KeySize = keySize,
+                IV = iv,
+                Key = key,
+                Mode = mode,
+                Padding = padding
+            })
+            {
                 using (var cryptoTransform = aes.CreateEncryptor())
+                {
                     cryptoTransformAction(cryptoTransform);
+                }
             }
         }
 
         private static void AesEncrypt<TState>(int keySize, byte[] iv, byte[] key, CipherMode mode, PaddingMode padding, TState state, Action<ICryptoTransform, TState> cryptoTransformAction)
         {
-            using (var aes = new AesManaged())
+            using (var aes = new AesManaged
             {
-                aes.KeySize = keySize;
-                aes.IV = iv;
-                aes.Key = key;
-                aes.Mode = mode;
-                aes.Padding = padding;
-
+                KeySize = keySize,
+                IV = iv,
+                Key = key,
+                Mode = mode,
+                Padding = padding
+            })
+            {
                 using (var cryptoTransform = aes.CreateEncryptor())
+                {
                     cryptoTransformAction(cryptoTransform, state);
+                }
             }
         }
     }
