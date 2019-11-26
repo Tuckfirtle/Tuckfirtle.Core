@@ -14,7 +14,7 @@ namespace Tuckfirtle.Core.Blockchain
         /// <summary>
         /// Transaction version.
         /// </summary>
-        public int Version { get; set; } = CoreSettings.TransactionVersion;
+        public byte Version { get; set; } = CoreSettings.TransactionVersion;
 
         /// <summary>
         /// Transaction timestamp.
@@ -22,14 +22,29 @@ namespace Tuckfirtle.Core.Blockchain
         public long Timestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
 
         /// <summary>
-        /// Transaction input.
+        /// Transaction sender address.
         /// </summary>
-        public TransactionData[] Input { get; set; }
+        public string SenderAddress { get; set; }
 
         /// <summary>
-        /// Transaction output.
+        /// Transaction receiver address.
         /// </summary>
-        public TransactionData[] Output { get; set; }
+        public string ReceiverAddress { get; set; }
+
+        /// <summary>
+        /// Transaction amount.
+        /// </summary>
+        public ulong Amount { get; set; }
+
+        /// <summary>
+        /// Transaction account nonce.
+        /// </summary>
+        public ulong AccountNonce { get; set; }
+
+        /// <summary>
+        /// Transaction signature.
+        /// </summary>
+        public string TransactionSignature { get; set; }
 
         /// <summary>
         /// Transaction hash.

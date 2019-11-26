@@ -27,14 +27,14 @@ namespace Tuckfirtle.Core
         public const ulong CoinAtomicUnit = 100;
 
         /// <summary>
-        /// Coin total supply in atomic unit. (TBD)
-        /// </summary>
-        public const ulong CoinTotalSupply = 10000000000000000000;
-
-        /// <summary>
         /// Current block version.
         /// </summary>
-        public const int BlockVersion = 1;
+        public const byte BlockVersion = 1;
+
+        /// <summary>
+        /// Current transaction version.
+        /// </summary>
+        public const byte TransactionVersion = 1;
 
         /// <summary>
         /// Genesis block difficulty.
@@ -42,14 +42,9 @@ namespace Tuckfirtle.Core
         public const int GenesisBlockDifficulty = 1000;
 
         /// <summary>
-        /// Current transaction version.
+        /// Account address prefix.
         /// </summary>
-        public const int TransactionVersion = 1;
-
-        /// <summary>
-        /// Minimum transaction fee needed to make an transaction.
-        /// </summary>
-        public const ulong MinimumTransactionFee = 0;
+        public const string AccountAddressPrefix = "TF";
 
         /// <summary>
         /// Tuckfirtle pow scratchpad size.

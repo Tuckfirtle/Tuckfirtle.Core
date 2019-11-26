@@ -17,7 +17,7 @@ namespace Tuckfirtle.Core.Blockchain
         /// <summary>
         /// Block version.
         /// </summary>
-        public int Version { get; set; } = CoreSettings.BlockVersion;
+        public byte Version { get; set; } = CoreSettings.BlockVersion;
 
         /// <summary>
         /// Block height.
