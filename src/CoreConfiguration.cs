@@ -7,9 +7,9 @@ using System;
 namespace Tuckfirtle.Core
 {
     /// <summary>
-    /// Core settings class that contains settings for this blockchain.
+    /// Core configuration class that contains settings for this blockchain.
     /// </summary>
-    public static class CoreSettings
+    public static class CoreConfiguration
     {
         /// <summary>
         /// Coin full name.
@@ -24,7 +24,7 @@ namespace Tuckfirtle.Core
         /// <summary>
         /// Coin atomic unit.
         /// </summary>
-        public const ulong CoinAtomicUnit = 100;
+        public const ulong CoinAtomicUnit = 100000000;
 
         /// <summary>
         /// Current block version.
@@ -32,19 +32,24 @@ namespace Tuckfirtle.Core
         public const byte BlockVersion = 1;
 
         /// <summary>
+        /// Block reward per minute.
+        /// </summary>
+        public const ulong BlockRewardPerMinute = 100000000;
+
+        /// <summary>
         /// Current transaction version.
         /// </summary>
         public const byte TransactionVersion = 1;
 
         /// <summary>
+        /// Current wallet address version.
+        /// </summary>
+        public const byte WalletAddressVersion = 1;
+
+        /// <summary>
         /// Genesis block difficulty.
         /// </summary>
         public const int GenesisBlockDifficulty = 1000;
-
-        /// <summary>
-        /// Account address prefix.
-        /// </summary>
-        public const string AccountAddressPrefix = "TF";
 
         /// <summary>
         /// Tuckfirtle pow scratchpad size.

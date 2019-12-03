@@ -2,6 +2,9 @@
 // 
 // Please see the included LICENSE file for more information.
 
+using System.Collections.Generic;
+using System.Numerics;
+
 namespace Tuckfirtle.Core.Utility
 {
     public static class Base58Utility
@@ -13,41 +16,24 @@ namespace Tuckfirtle.Core.Utility
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
         };
 
-        public static string Encode(byte[] value)
+        public static string Encode(byte[] payload)
         {
-            var result = new char[EncodeLength(value)];
-            var index = 0;
+            var unsignedPayload = new byte[payload.Length + 1];
+            unsignedPayload[unsignedPayload.Length - 1] = 0;
 
-            foreach (var byteValue in value)
+            for (var i = 0; i < payload.Length; i++)
+                unsignedPayload[i] = payload[i];
+
+            var payloadValue = new BigInteger(unsignedPayload);
+            var result = new List<char>();
+
+            while (payloadValue > 0)
             {
-                if (byteValue > 58)
-                {
-                    result[index] = Characters[byteValue / Characters.Length - (byteValue % Characters.Length == 0 ? 1 : 0)];
-                    result[index + 1] = Characters[byteValue % Characters.Length];
-                    index++;
-                }
-                else
-                    result[index] = Characters[byteValue % Characters.Length];
-
-                index++;
+                payloadValue = BigInteger.DivRem(payloadValue, 58, out var remainder);
+                result.Add(Characters[(int) remainder]);
             }
 
-            return new string(result);
-        }
-
-        private static int EncodeLength(byte[] value)
-        {
-            var length = 0;
-
-            foreach (var byteValue in value)
-            {
-                if (byteValue <= 58)
-                    length++;
-                else
-                    length += 2;
-            }
-
-            return length;
+            return new string(result.ToArray());
         }
     }
 }

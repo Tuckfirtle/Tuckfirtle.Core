@@ -41,15 +41,15 @@ namespace Tuckfirtle.Core.Blockchain
         /// <summary>
         /// Account transaction reference.
         /// </summary>
-        public new List<Transaction> TransactionReference { get; set; }
+        public List<Transaction> TransactionReference { get; set; }
 
         public Account()
         {
             AsymmetricAlgorithmUtility.GenerateKeypair(out var publicKey, out var privateKey);
 
-            AccountAddress = CoreSettings.AccountAddressPrefix + Base58Utility.Encode(publicKey);
-            PublicSpendKey = Convert.ToBase64String(publicKey, Base64FormattingOptions.None);
-            PrivateSpendKey = Convert.ToBase64String(privateKey, Base64FormattingOptions.None);
+            AccountAddress = Base58Utility.Encode(publicKey);
+            PublicSpendKey = BitConverter.ToString(publicKey).Replace("-", "");
+            PrivateSpendKey = BitConverter.ToString(privateKey).Replace("-", "");
         }
     }
 }

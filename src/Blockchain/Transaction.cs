@@ -3,6 +3,8 @@
 // Please see the included LICENSE file for more information.
 
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Tuckfirtle.Core.Blockchain
 {
@@ -14,7 +16,7 @@ namespace Tuckfirtle.Core.Blockchain
         /// <summary>
         /// Transaction version.
         /// </summary>
-        public byte Version { get; set; } = CoreSettings.TransactionVersion;
+        public byte Version { get; set; } = CoreConfiguration.TransactionVersion;
 
         /// <summary>
         /// Transaction timestamp.
@@ -22,33 +24,23 @@ namespace Tuckfirtle.Core.Blockchain
         public long Timestamp { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
 
         /// <summary>
-        /// Transaction sender address.
+        /// Transaction inputs.
         /// </summary>
-        public string SenderAddress { get; set; }
+        public List<TransactionInput> TransactionInputs { get; } = new List<TransactionInput>();
 
         /// <summary>
-        /// Transaction receiver address.
+        /// Transaction outputs.
         /// </summary>
-        public string ReceiverAddress { get; set; }
-
-        /// <summary>
-        /// Transaction amount.
-        /// </summary>
-        public ulong Amount { get; set; }
-
-        /// <summary>
-        /// Transaction account nonce.
-        /// </summary>
-        public ulong AccountNonce { get; set; }
-
-        /// <summary>
-        /// Transaction signature.
-        /// </summary>
-        public string TransactionSignature { get; set; }
+        public List<TransactionOutput> TransactionOutputs { get; } = new List<TransactionOutput>();
 
         /// <summary>
         /// Transaction hash.
         /// </summary>
         public string TransactionHash { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.None);
+        }
     }
 }

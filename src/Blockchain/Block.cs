@@ -17,7 +17,7 @@ namespace Tuckfirtle.Core.Blockchain
         /// <summary>
         /// Block version.
         /// </summary>
-        public byte Version { get; set; } = CoreSettings.BlockVersion;
+        public byte Version { get; set; } = CoreConfiguration.BlockVersion;
 
         /// <summary>
         /// Block height.
@@ -37,7 +37,7 @@ namespace Tuckfirtle.Core.Blockchain
         /// <summary>
         /// Block target pow value.
         /// </summary>
-        public BigInteger TargetPowValue { get; set; } = DifficultyUtility.GetTargetPowValue(CoreSettings.GenesisBlockDifficulty);
+        public BigInteger TargetPowValue { get; set; } = DifficultyUtility.GetTargetPowValue(CoreConfiguration.GenesisBlockDifficulty);
 
         /// <summary>
         /// Block hash.
