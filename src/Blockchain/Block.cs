@@ -40,11 +40,6 @@ namespace Tuckfirtle.Core.Blockchain
         public BigInteger TargetPowValue { get; set; } = DifficultyUtility.GetTargetPowValue(CoreConfiguration.GenesisBlockDifficulty);
 
         /// <summary>
-        /// Block hash.
-        /// </summary>
-        public string BlockHash { get; set; } = string.Empty;
-
-        /// <summary>
         /// Previous block hash.
         /// </summary>
         public string PreviousBlockHash { get; set; } = string.Empty;
@@ -54,6 +49,9 @@ namespace Tuckfirtle.Core.Blockchain
         /// </summary>
         public string MerkleRootHash { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Block transactions.
+        /// </summary>
         public List<Transaction> Transactions { get; set; }
     }
 }

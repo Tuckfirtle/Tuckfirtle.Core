@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace Tuckfirtle.Core.Blockchain
 {
@@ -26,21 +25,11 @@ namespace Tuckfirtle.Core.Blockchain
         /// <summary>
         /// Transaction inputs.
         /// </summary>
-        public List<TransactionInput> TransactionInputs { get; } = new List<TransactionInput>();
+        public List<TransactionInput> TransactionInputs { get; set; } = new List<TransactionInput>();
 
         /// <summary>
         /// Transaction outputs.
         /// </summary>
-        public List<TransactionOutput> TransactionOutputs { get; } = new List<TransactionOutput>();
-
-        /// <summary>
-        /// Transaction hash.
-        /// </summary>
-        public string TransactionHash { get; set; }
-
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.None);
-        }
+        public List<TransactionOutput> TransactionOutputs { get; set; } = new List<TransactionOutput>();
     }
 }

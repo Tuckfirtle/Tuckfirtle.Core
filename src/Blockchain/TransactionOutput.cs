@@ -17,18 +17,8 @@ namespace Tuckfirtle.Core.Blockchain
         public ulong Amount { get; set; }
 
         /// <summary>
-        /// Transaction locking type.
+        /// Receiver wallet address.
         /// </summary>
-        public TransactionLockingType LockingType { get; set; }
-
-        /// <summary>
-        /// Transaction locking data.
-        /// </summary>
-        public string LockingData { get; set; }
-
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.None);
-        }
+        public string ReceiverAddress { get; set; }
     }
 }

@@ -7,9 +7,9 @@ using Tuckfirtle.OpenQuantumSafe;
 namespace Tuckfirtle.Core.Utility
 {
     /// <summary>
-    /// Utility class that contains all asymmetric algorithm functions.
+    /// Utility class that contains all the signature functions.
     /// </summary>
-    public static class AsymmetricAlgorithmUtility
+    public static class SignatureUtility
     {
         public static void GenerateKeypair(out byte[] publicKey, out byte[] privateKey)
         {

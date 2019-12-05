@@ -19,13 +19,13 @@ namespace Tuckfirtle.Core.Blockchain
         public int TransactionOutputIndex { get; set; }
 
         /// <summary>
-        /// Transaction unlocking data.
+        /// Sender public key.
         /// </summary>
-        public string UnlockingData { get; set; }
+        public string SenderPublicKey { get; set; }
 
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.None);
-        }
+        /// <summary>
+        /// Transaction signature.
+        /// </summary>
+        public string Signature { get; set; }
     }
 }

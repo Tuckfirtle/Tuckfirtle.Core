@@ -32,9 +32,14 @@ namespace Tuckfirtle.Core
         public const byte BlockVersion = 1;
 
         /// <summary>
-        /// Block reward per minute.
+        /// Block reward per minute in atomic units.
         /// </summary>
-        public const ulong BlockRewardPerMinute = 100000000;
+        public const ulong BlockRewardPerMinute = 1 * CoinAtomicUnit;
+
+        /// <summary>
+        /// Block minimum creation time in seconds.
+        /// </summary>
+        public const long BlockMinimumCreationTime = 1;
 
         /// <summary>
         /// Current transaction version.
@@ -42,9 +47,9 @@ namespace Tuckfirtle.Core
         public const byte TransactionVersion = 1;
 
         /// <summary>
-        /// Current wallet address version.
+        /// Transaction minimum amount in atomic units.
         /// </summary>
-        public const byte WalletAddressVersion = 1;
+        public const ulong TransactionMinimumAmount = 1;
 
         /// <summary>
         /// Genesis block difficulty.
