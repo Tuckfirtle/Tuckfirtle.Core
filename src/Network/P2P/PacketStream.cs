@@ -23,6 +23,8 @@ namespace Tuckfirtle.Core.Network.P2P
 
         private int _packetBufferOffset;
 
+        private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
+
         public PacketStream(NetworkStream networkStream, NetworkType networkType, int pingLimit)
         {
             _networkStream = networkStream;
@@ -77,6 +79,54 @@ namespace Tuckfirtle.Core.Network.P2P
             } while (!cancellationToken.IsCancellationRequested);
 
             return null;
+        }
+
+        public async Task WritePacketAsync(IPacketHeader packetHeader, CancellationToken cancellationToken = default)
+        {
+            var isExecute = false;
+
+            try
+            {
+                await _semaphoreSlim.WaitAsync(cancellationToken).ConfigureAwait(false);
+                isExecute = true;
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var binaryStream = new BinaryWriter(memoryStream))
+                    {
+                        binaryStream.Write(packetHeader.NetworkGuid.ToByteArray());
+                        binaryStream.Write(packetHeader.NetworkProtocolVersion);
+                        binaryStream.Write((byte) packetHeader.ContentCompressionType);
+                        binaryStream.Write((byte) packetHeader.ContentEncryptionType);
+                        binaryStream.Write((byte) packetHeader.ContentType);
+                        binaryStream.Write((byte) packetHeader.ContentChecksumType);
+                        binaryStream.Write(packetHeader.ContentLength);
+                        binaryStream.Write(packetHeader.ContentChecksumLength);
+                        binaryStream.Write(packetHeader.ContentData);
+                        binaryStream.Write(packetHeader.ContentChecksum);
+                        binaryStream.Flush();
+
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+
+                        var sendingBuffer = new byte[CoreConfiguration.P2PSendBufferSize];
+                        int read;
+
+                        do
+                        {
+                            read = await memoryStream.ReadAsync(sendingBuffer, 0, sendingBuffer.Length, cancellationToken).ConfigureAwait(false);
+                            await _networkStream.WriteAsync(sendingBuffer, 0, sendingBuffer.Length, cancellationToken).ConfigureAwait(false);
+                        } while (read > 0);
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            finally
+            {
+                if (isExecute)
+                    _semaphoreSlim.Release();
+            }
         }
 
         private async Task FillPacketBufferAsync(PacketHeader packetHeader, int requireBufferSize, Action<PacketHeader, byte[]> bufferFullAction)

@@ -95,17 +95,17 @@ namespace Tuckfirtle.Core
         /// <summary>
         /// Peer to peer (P2P) content compression type.
         /// </summary>
-        public const byte P2PContentCompressionType = (byte) ContentCompressionType.GZip;
+        public const ContentCompressionType P2PContentCompressionType = ContentCompressionType.GZip;
 
         /// <summary>
         /// Peer to peer (P2P) content encryption type.
         /// </summary>
-        public const byte P2PContentEncryptionType = (byte) ContentEncryptionType.SikeP434Compressed;
+        public const ContentEncryptionType P2PContentEncryptionType = ContentEncryptionType.Aes;
 
         /// <summary>
         /// Peer to peer (P2P) content checksum type.
         /// </summary>
-        public const byte P2PContentChecksumType = (byte) ContentChecksumType.Sha256;
+        public const ContentChecksumType P2PContentChecksumType = ContentChecksumType.Sha256;
 
         /// <summary>
         /// Remote procedural call (RPC) default port.
