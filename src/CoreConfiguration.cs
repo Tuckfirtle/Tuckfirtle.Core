@@ -3,6 +3,7 @@
 // Please see the included LICENSE file for more information.
 
 using System;
+using Tuckfirtle.Core.Network.P2P.Header;
 
 namespace Tuckfirtle.Core
 {
@@ -70,6 +71,41 @@ namespace Tuckfirtle.Core
         /// Peer to peer (P2P) default port.
         /// </summary>
         public const ushort P2PDefaultPort = 15080;
+
+        /// <summary>
+        /// Peer to peer (P2P) ping packet duration.
+        /// </summary>
+        public const int P2PPingPacketDuration = 30000;
+
+        /// <summary>
+        /// Peer to peer (P2P) receive buffer size.
+        /// </summary>
+        public const int P2PReceiveBufferSize = 1024 * 8;
+
+        /// <summary>
+        /// Peer to peer (P2P) send buffer size.
+        /// </summary>
+        public const int P2PSendBufferSize = 1024 * 8;
+
+        /// <summary>
+        /// Peer to peer (P2P) network protocol version.
+        /// </summary>
+        public const byte P2PNetworkProtocolVersion = 1;
+
+        /// <summary>
+        /// Peer to peer (P2P) content compression type.
+        /// </summary>
+        public const byte P2PContentCompressionType = (byte) ContentCompressionType.GZip;
+
+        /// <summary>
+        /// Peer to peer (P2P) content encryption type.
+        /// </summary>
+        public const byte P2PContentEncryptionType = (byte) ContentEncryptionType.SikeP434Compressed;
+
+        /// <summary>
+        /// Peer to peer (P2P) content checksum type.
+        /// </summary>
+        public const byte P2PContentChecksumType = (byte) ContentChecksumType.Sha256;
 
         /// <summary>
         /// Remote procedural call (RPC) default port.
