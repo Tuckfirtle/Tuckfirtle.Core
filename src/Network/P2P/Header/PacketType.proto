@@ -1,0 +1,8 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Tuckfirtle.Core.Network.P2P.Header";
+
+enum PacketType {
+  PACKET_TYPE_PING = 0;
+  PACKET_TYPE_HANDSHAKE = 1;
+}

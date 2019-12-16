@@ -4,7 +4,7 @@
 
 namespace Tuckfirtle.Core.Network
 {
-    public enum NetworkType
+    public enum NetworkType : byte
     {
         Testnet = 0,
         Mainnet = 1

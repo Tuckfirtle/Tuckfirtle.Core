@@ -1,0 +1,9 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Tuckfirtle.Core.Network.P2P.Header";
+
+enum PacketCompressionType {
+	PACKET_COMPRESSION_TYPE_NONE = 0;
+	PACKET_COMPRESSION_TYPE_DEFLATE = 1;
+	PACKET_COMPRESSION_TYPE_GZIP = 2;
+}

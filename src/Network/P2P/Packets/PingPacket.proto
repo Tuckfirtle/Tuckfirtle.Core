@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+option csharp_namespace = "Tuckfirtle.Core.Network.P2P.Packets";
+
+message PingPacket {
+}

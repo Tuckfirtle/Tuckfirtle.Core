@@ -1,0 +1,8 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Tuckfirtle.Core.Network.P2P.Header";
+
+enum PacketEncryptionType {
+	PACKET_ENCRYPTION_TYPE_NONE = 0;
+	PACKET_ENCRYPTION_TYPE_AES = 1;
+}

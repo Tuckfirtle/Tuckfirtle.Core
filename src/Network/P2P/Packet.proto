@@ -1,0 +1,20 @@
+﻿syntax = "proto3";
+
+import "Network/P2P/Header/PacketCompressionType.proto";
+import "Network/P2P/Header/PacketEncryptionType.proto";
+import "Network/P2P/Header/PacketType.proto";
+import "Network/P2P/Header/PacketChecksumType.proto";
+
+option csharp_namespace = "Tuckfirtle.Core.Network.P2P";
+
+message Packet {
+	bytes packet_network = 1;
+	int32 packet_network_protocol_version = 2;
+	int32 packet_keep_alive_duration = 3;
+	PacketCompressionType packet_compression_type = 4;
+	PacketEncryptionType packet_encryption_type = 5;
+	PacketType packet_type = 6;
+	PacketChecksumType packet_checksum_type = 7;
+	bytes packet_data = 8;
+	bytes packet_checksum = 9;
+}

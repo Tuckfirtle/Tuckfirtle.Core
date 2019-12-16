@@ -3,6 +3,7 @@
 // Please see the included LICENSE file for more information.
 
 using System;
+using Tuckfirtle.Core.Network.P2P;
 using Tuckfirtle.Core.Network.P2P.Header;
 
 namespace Tuckfirtle.Core
@@ -73,39 +74,39 @@ namespace Tuckfirtle.Core
         public const ushort P2PDefaultPort = 15080;
 
         /// <summary>
-        /// Peer to peer (P2P) ping packet duration.
-        /// </summary>
-        public const int P2PPingPacketDuration = 30000;
-
-        /// <summary>
         /// Peer to peer (P2P) receive buffer size.
         /// </summary>
-        public const int P2PReceiveBufferSize = 1024 * 8;
+        public const int P2PReceiveBufferSize = 8 * 1024;
 
         /// <summary>
         /// Peer to peer (P2P) send buffer size.
         /// </summary>
-        public const int P2PSendBufferSize = 1024 * 8;
+        public const int P2PSendBufferSize = 8 * 1024;
+
+        /// <summary>
+        /// Peer to peer (P2P) ping packet duration.
+        /// </summary>
+        public const int P2PKeepAliveDuration = 30000;
 
         /// <summary>
         /// Peer to peer (P2P) network protocol version.
         /// </summary>
-        public const byte P2PNetworkProtocolVersion = 1;
+        public const int P2PNetworkProtocolVersion = 1;
 
         /// <summary>
-        /// Peer to peer (P2P) content compression type.
+        /// Peer to peer (P2P) packet compression type.
         /// </summary>
-        public const ContentCompressionType P2PContentCompressionType = ContentCompressionType.GZip;
+        public const PacketCompressionType P2PPacketCompressionType = PacketCompressionType.Gzip;
 
         /// <summary>
-        /// Peer to peer (P2P) content encryption type.
+        /// Peer to peer (P2P) packet encryption type.
         /// </summary>
-        public const ContentEncryptionType P2PContentEncryptionType = ContentEncryptionType.Aes;
+        public const PacketEncryptionType P2PPacketEncryptionType = PacketEncryptionType.Aes;
 
         /// <summary>
-        /// Peer to peer (P2P) content checksum type.
+        /// Peer to peer (P2P) packet checksum type.
         /// </summary>
-        public const ContentChecksumType P2PContentChecksumType = ContentChecksumType.Sha256;
+        public const PacketChecksumType P2PPacketChecksumType = PacketChecksumType.Sha256;
 
         /// <summary>
         /// Remote procedural call (RPC) default port.
@@ -115,11 +116,11 @@ namespace Tuckfirtle.Core
         /// <summary>
         /// Unique testnet network id for network communication.
         /// </summary>
-        public static Guid TestnetNetworkId = new Guid(new byte[] { 84, 117, 99, 107, 102, 105, 114, 116, 108, 101, 32, 84, 101, 115, 116, 32 });
+        public static Guid TestnetNetworkGuid = new Guid(new byte[] { 84, 117, 99, 107, 102, 105, 114, 116, 108, 101, 32, 84, 101, 115, 116, 32 });
 
         /// <summary>
         /// Unique mainnet network id for network communication.
         /// </summary>
-        public static Guid MainnetNetworkId = new Guid(new byte[] { 84, 117, 99, 107, 102, 105, 114, 116, 108, 101, 32, 77, 97, 105, 110, 32 });
+        public static Guid MainnetNetworkGuid = new Guid(new byte[] { 84, 117, 99, 107, 102, 105, 114, 116, 108, 101, 32, 77, 97, 105, 110, 32 });
     }
 }
