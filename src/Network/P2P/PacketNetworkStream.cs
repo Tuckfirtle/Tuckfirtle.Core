@@ -3,13 +3,11 @@
 // Please see the included LICENSE file for more information.
 
 using System;
-using System.Linq;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
-using Tuckfirtle.Core.Network.P2P.Header;
+using TheDialgaTeam.Core.Tasks;
 
 namespace Tuckfirtle.Core.Network.P2P
 {
@@ -17,7 +15,7 @@ namespace Tuckfirtle.Core.Network.P2P
     {
         private readonly NetworkStream _networkStream;
 
-        private readonly NetworkType _networkType;
+        private readonly byte[] _networkGuid;
 
         private readonly SemaphoreSlim _readSemaphoreSlim = new SemaphoreSlim(1, 1);
 
@@ -26,7 +24,20 @@ namespace Tuckfirtle.Core.Network.P2P
         public PacketNetworkStream(NetworkStream networkStream, NetworkType networkType)
         {
             _networkStream = networkStream;
-            _networkType = networkType;
+
+            switch (networkType)
+            {
+                case NetworkType.Testnet:
+                    _networkGuid = CoreConfiguration.TestnetNetworkGuid.ToByteArray();
+                    break;
+
+                case NetworkType.Mainnet:
+                    _networkGuid = CoreConfiguration.MainnetNetworkGuid.ToByteArray();
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(networkType), networkType, null);
+            }
         }
 
         public async Task<Packet> ReadPacketAsync(CancellationToken cancellationToken = default)
@@ -35,22 +46,42 @@ namespace Tuckfirtle.Core.Network.P2P
 
             try
             {
-                do
+                var readingTask = TaskState.Run<(NetworkStream, Func<Packet, bool>, CancellationToken), Packet>((_networkStream, VerifyPacket, cancellationToken), state =>
                 {
-                    var packet = Packet.Parser.ParseDelimitedFrom(_networkStream);
+                    var (networkStream, verifyPacketFunction, cancellationTokenState) = state;
 
-                    if (!VerifyPacket(packet))
-                        continue;
+                    do
+                    {
+                        try
+                        {
+                            var packet = Packet.Parser.ParseDelimitedFrom(networkStream);
 
-                    return packet;
-                } while (!cancellationToken.CanBeCanceled || !cancellationToken.IsCancellationRequested);
+                            if (!verifyPacketFunction(packet))
+                                continue;
+
+                            return packet;
+                        }
+                        catch (InvalidProtocolBufferException)
+                        {
+                            // If the packet is invalid or malformed, skip and retry again.
+                        }
+                    } while (!cancellationTokenState.CanBeCanceled || !cancellationTokenState.IsCancellationRequested);
+
+                    return null;
+                }, cancellationToken);
+
+                var resultingTask = await Task.WhenAny(readingTask, Task.Delay(-1, cancellationToken)).ConfigureAwait(false);
+
+                if (resultingTask != readingTask)
+                    return null;
+
+                var result = await readingTask.ConfigureAwait(false);
+                return result;
             }
             finally
             {
                 _readSemaphoreSlim.Release();
             }
-
-            return null;
         }
 
         public async Task WritePacketAsync(Packet packet, CancellationToken cancellationToken = default)
@@ -59,7 +90,13 @@ namespace Tuckfirtle.Core.Network.P2P
 
             try
             {
-                packet.WriteDelimitedTo(_networkStream);
+                var writingTask = TaskState.Run((packet, _networkStream), state =>
+                {
+                    var (packetState, networkStream) = state;
+                    packetState.WriteDelimitedTo(networkStream);
+                }, cancellationToken);
+
+                await Task.WhenAny(writingTask, Task.Delay(-1, cancellationToken)).ConfigureAwait(false);
             }
             finally
             {
@@ -70,64 +107,28 @@ namespace Tuckfirtle.Core.Network.P2P
         private bool VerifyPacket(Packet packet)
         {
             // Step 1: Verify Packet Network
-            switch (_networkType)
-            {
-                case NetworkType.Testnet:
-                    if (!packet.PacketNetwork.SequenceEqual(CoreConfiguration.TestnetNetworkGuid.ToByteArray()))
-                        return false;
-                    break;
-
-                case NetworkType.Mainnet:
-                    if (!packet.PacketNetwork.SequenceEqual(CoreConfiguration.MainnetNetworkGuid.ToByteArray()))
-                        return false;
-                    break;
-
-                default:
-                    return false;
-            }
-
-            // Step 2: Verify Packet Network Protocol Version
-            if (packet.PacketNetworkProtocolVersion > CoreConfiguration.P2PNetworkProtocolVersion)
+            if (packet.PacketNetwork.Length != _networkGuid.Length)
                 return false;
 
-            // Step 3: Verify Packet Keep Alive Duration
-            if (packet.PacketKeepAliveDuration <= 0)
-                return false;
+            var packetNetwork = packet.PacketNetwork;
 
-            // Step 4: Verify Packet Checksum
-            switch (packet.PacketChecksumType)
+            for (var i = 0; i < 16; i++)
             {
-                case PacketChecksumType.None:
-                    return true;
+                if (packetNetwork[i] == _networkGuid[i])
+                    continue;
 
-                case PacketChecksumType.Md5:
-                    using (var md5 = new MD5CryptoServiceProvider())
-                        return md5.ComputeHash(packet.PacketData.ToByteArray()).SequenceEqual(packet.PacketChecksum);
-
-                case PacketChecksumType.Sha1:
-                    using (var sha1 = new SHA1CryptoServiceProvider())
-                        return sha1.ComputeHash(packet.PacketData.ToByteArray()).SequenceEqual(packet.PacketChecksum);
-
-                case PacketChecksumType.Sha256:
-                    using (var sha256 = new SHA256CryptoServiceProvider())
-                        return sha256.ComputeHash(packet.PacketData.ToByteArray()).SequenceEqual(packet.PacketChecksum);
-
-                case PacketChecksumType.Sha384:
-                    using (var sha384 = new SHA384CryptoServiceProvider())
-                        return sha384.ComputeHash(packet.PacketData.ToByteArray()).SequenceEqual(packet.PacketChecksum);
-
-                case PacketChecksumType.Sha512:
-                    using (var sha512 = new SHA512CryptoServiceProvider())
-                        return sha512.ComputeHash(packet.PacketData.ToByteArray()).SequenceEqual(packet.PacketChecksum);
-
-                default:
-                    return false;
+                return false;
             }
+
+            // Step 2: Verify Packet Keep Alive Duration
+            return packet.PacketKeepAliveDuration > 0;
         }
 
         public void Dispose()
         {
             _networkStream?.Dispose();
+            _readSemaphoreSlim?.Dispose();
+            _writeSemaphoreSlim?.Dispose();
         }
     }
 }

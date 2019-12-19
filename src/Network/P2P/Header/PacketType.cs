@@ -24,10 +24,10 @@ namespace Tuckfirtle.Core.Network.P2P.Header {
     static PacketTypeReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CiNOZXR3b3JrL1AyUC9IZWFkZXIvUGFja2V0VHlwZS5wcm90byo9CgpQYWNr",
-            "ZXRUeXBlEhQKEFBBQ0tFVF9UWVBFX1BJTkcQABIZChVQQUNLRVRfVFlQRV9I",
-            "QU5EU0hBS0UQAUIlqgIiVHVja2ZpcnRsZS5Db3JlLk5ldHdvcmsuUDJQLkhl",
-            "YWRlcmIGcHJvdG8z"));
+            "CiNOZXR3b3JrL1AyUC9IZWFkZXIvUGFja2V0VHlwZS5wcm90bypWCgpQYWNr",
+            "ZXRUeXBlEhcKE1BBQ0tFVF9UWVBFX1VOS05PV04QABIUChBQQUNLRVRfVFlQ",
+            "RV9QSU5HEAESGQoVUEFDS0VUX1RZUEVfSEFORFNIQUtFEAJCJaoCIlR1Y2tm",
+            "aXJ0bGUuQ29yZS5OZXR3b3JrLlAyUC5IZWFkZXJiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Tuckfirtle.Core.Network.P2P.Header.PacketType), }, null));
@@ -37,8 +37,9 @@ namespace Tuckfirtle.Core.Network.P2P.Header {
   }
   #region Enums
   public enum PacketType {
-    [pbr::OriginalName("PACKET_TYPE_PING")] Ping = 0,
-    [pbr::OriginalName("PACKET_TYPE_HANDSHAKE")] Handshake = 1,
+    [pbr::OriginalName("PACKET_TYPE_UNKNOWN")] Unknown = 0,
+    [pbr::OriginalName("PACKET_TYPE_PING")] Ping = 1,
+    [pbr::OriginalName("PACKET_TYPE_HANDSHAKE")] Handshake = 2,
   }
 
   #endregion

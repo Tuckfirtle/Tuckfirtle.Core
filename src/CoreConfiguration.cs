@@ -89,11 +89,6 @@ namespace Tuckfirtle.Core
         public const int P2PKeepAliveDuration = 30000;
 
         /// <summary>
-        /// Peer to peer (P2P) network protocol version.
-        /// </summary>
-        public const int P2PNetworkProtocolVersion = 1;
-
-        /// <summary>
         /// Peer to peer (P2P) packet compression type.
         /// </summary>
         public const PacketCompressionType P2PPacketCompressionType = PacketCompressionType.Gzip;
@@ -102,11 +97,6 @@ namespace Tuckfirtle.Core
         /// Peer to peer (P2P) packet encryption type.
         /// </summary>
         public const PacketEncryptionType P2PPacketEncryptionType = PacketEncryptionType.Aes;
-
-        /// <summary>
-        /// Peer to peer (P2P) packet checksum type.
-        /// </summary>
-        public const PacketChecksumType P2PPacketChecksumType = PacketChecksumType.Sha256;
 
         /// <summary>
         /// Remote procedural call (RPC) default port.

@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\TheDialgaTeam.Core.Tasks\src\TheDialgaTeam.Core.Tasks.csproj" />
     <ProjectReference Include="..\..\Tuckfirtle.OpenQuantumSafe\src\Tuckfirtle.OpenQuantumSafe.csproj" />
   </ItemGroup>
 
