@@ -3,7 +3,6 @@
 // Please see the included LICENSE file for more information.
 
 using System;
-using Tuckfirtle.Core.Network.P2P;
 using Tuckfirtle.Core.Network.P2P.Header;
 
 namespace Tuckfirtle.Core
@@ -34,9 +33,14 @@ namespace Tuckfirtle.Core
         public const byte BlockVersion = 1;
 
         /// <summary>
-        /// Block reward per minute in atomic units.
+        /// Block reward time unit in seconds.
         /// </summary>
-        public const ulong BlockRewardPerMinute = 1 * CoinAtomicUnit;
+        public const long BlockRewardTimeUnit = 60;
+
+        /// <summary>
+        /// Block reward per time unit in atomic units.
+        /// </summary>
+        public const ulong BlockRewardPerTimeUnit = 1 * CoinAtomicUnit;
 
         /// <summary>
         /// Block minimum creation time in seconds.

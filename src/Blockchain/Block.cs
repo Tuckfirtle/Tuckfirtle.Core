@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Tuckfirtle.Core.Blockchain.Payments;
 using Tuckfirtle.Core.Utility;
 
 namespace Tuckfirtle.Core.Blockchain

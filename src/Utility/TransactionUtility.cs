@@ -4,6 +4,9 @@
 
 using System;
 using Tuckfirtle.Core.Blockchain;
+using Tuckfirtle.Core.Blockchain.Payments;
+using Tuckfirtle.Core.Interfaces.Blockchain;
+using Tuckfirtle.Core.Interfaces.Blockchain.Payments;
 
 namespace Tuckfirtle.Core.Utility
 {
@@ -17,22 +20,12 @@ namespace Tuckfirtle.Core.Utility
         /// </summary>
         /// <param name="address">Wallet address this transaction goes to.</param>
         /// <param name="blockReference">Reference to the previous block you are mining for.</param>
-        public static Transaction GenerateMinerTransaction(string address, Block blockReference)
+        public static ITransaction GenerateMinerTransaction(string address, Block blockReference)
         {
             var timeDifference = DateTimeOffset.Now.ToUnixTimeSeconds() - blockReference.Timestamp;
-            var expectedReward = (ulong) Math.Floor(CoreConfiguration.BlockRewardPerMinute * (timeDifference / 60.0m));
+            var expectedReward = (ulong) Math.Floor(CoreConfiguration.BlockRewardPerTimeUnit * (timeDifference / 60.0m));
 
-            return new Transaction
-            {
-                TransactionOutputs =
-                {
-                    new TransactionOutput
-                    {
-                        Amount = expectedReward,
-                        ReceiverAddress = address
-                    }
-                }
-            };
+            return new Transaction();
         }
     }
 }
