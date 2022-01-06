@@ -1,52 +1,56 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <AssemblyName>Tuckfirtle.Core</AssemblyName>
-    <RootNamespace>Tuckfirtle.Core</RootNamespace>
-    <TargetFrameworks>netstandard2.1;netstandard2.0</TargetFrameworks>
-    <OutputType>Library</OutputType>
-    <PackageId>Tuckfirtle.Core</PackageId>
-    <Version>0.0.1.0</Version>
-    <Authors>Yong Jian Ming</Authors>
-    <Company>Tuckfirtle</Company>
-    <Product>Tuckfirtle.Core</Product>
-    <Description>Tuckfirtle core.</Description>
-    <PackageProjectUrl>https://github.com/tuckfirtle/Tuckfirtle.Core</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/tuckfirtle/Tuckfirtle.Core</RepositoryUrl>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Platforms>AnyCPU;x64;x86</Platforms>
-  </PropertyGroup>
+	<PropertyGroup>
+		<AssemblyName>Tuckfirtle.Core</AssemblyName>
+		<RootNamespace>Tuckfirtle.Core</RootNamespace>
+		<TargetFramework>net6.0</TargetFramework>
+		<OutputType>Library</OutputType>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>DEBUG</DefineConstants>
-    <Optimize>false</Optimize>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
+		<Configurations>Debug;Release</Configurations>
+		<Platforms>AnyCPU;x64;x86;ARM32;ARM64</Platforms>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <Optimize>true</Optimize>
-    <DebugType>none</DebugType>
-  </PropertyGroup>
+		<PackageId>Tuckfirtle.Core</PackageId>
+		<Version>0.0.1.0</Version>
+		<Authors>Yong Jian Ming</Authors>
+		<Company>Tuckfirtle</Company>
+		<Product>Tuckfirtle.Core</Product>
+		<Description>Tuckfirtle core.</Description>
+		<PackageProjectUrl>https://github.com/tuckfirtle/Tuckfirtle.Core</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/tuckfirtle/Tuckfirtle.Core</RepositoryUrl>
 
-  <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.13.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.31.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\TheDialgaTeam.Core.Tasks\src\TheDialgaTeam.Core.Tasks.csproj" />
-    <ProjectReference Include="..\..\Tuckfirtle.OpenQuantumSafe\src\Tuckfirtle.OpenQuantumSafe.csproj" />
-  </ItemGroup>
+	<PropertyGroup Condition="$(Configuration.StartsWith('Debug'))">
+		<DefineConstants>DEBUG</DefineConstants>
+		<Optimize>false</Optimize>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Protobuf Include="Network/P2P/*.proto" OutputDir="Network/P2P" CompileOutputs="false" GrpcServices="None" />
-    <Protobuf Include="Network/P2P/Header/*.proto" OutputDir="Network/P2P/Header" CompileOutputs="false" GrpcServices="None" />
-    <Protobuf Include="Network/P2P/Packets/*.proto" OutputDir="Network/P2P/Packets" CompileOutputs="false" GrpcServices="None" />
-  </ItemGroup>
+	<PropertyGroup Condition="$(Configuration.StartsWith('Release'))">
+		<Optimize>true</Optimize>
+		<DebugType>none</DebugType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Google.Protobuf" Version="3.14.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.34.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Tuckfirtle.OpenQuantumSafe\src\Tuckfirtle.OpenQuantumSafe.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Network/P2P/*.proto" OutputDir="" CompileOutputs="false" GrpcServices="None" />
+		<Protobuf Include="Network/P2P/Header/*.proto" OutputDir="" CompileOutputs="false" GrpcServices="None" />
+		<Protobuf Include="Network/P2P/Packets/*.proto" OutputDir="" CompileOutputs="false" GrpcServices="None" />
+	</ItemGroup>
 
 
 </Project>

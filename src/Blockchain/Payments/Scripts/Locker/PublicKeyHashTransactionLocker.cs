@@ -11,14 +11,21 @@ namespace Tuckfirtle.Core.Blockchain.Payments.Scripts.Locker
     {
         public string ScriptName { get; } = nameof(PublicKeyHashTransactionLocker);
 
-        public byte[] PublicKeyHash { get; private set; }
+        public byte[] PublicKeyHash { get; }
 
-        public static ITransactionLocker CreateTransactionLocker(byte[] target)
+        private PublicKeyHashTransactionLocker(byte[] targetPublicKeyHash)
         {
-            return new PublicKeyHashTransactionLocker
-            {
-                PublicKeyHash = HashAlgorithmUtility.Sha256ComputeHash(target)
-            };
+            PublicKeyHash = targetPublicKeyHash;
+        }
+
+        public static ITransactionLocker CreateTransactionLocker(byte[] targetWalletAddress)
+        {
+            return new PublicKeyHashTransactionLocker(HashAlgorithmUtility.Sha256ComputeHash(targetWalletAddress));
+        }
+
+        public override string ToString()
+        {
+            return JsonUtility.Serialize(this);
         }
     }
 }

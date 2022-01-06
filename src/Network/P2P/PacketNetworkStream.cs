@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2019, The Tuckfirtle Developers
+﻿// Copyright (C) 2020, The Tuckfirtle Developers
 // 
 // Please see the included LICENSE file for more information.
 
@@ -7,76 +7,102 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
-using TheDialgaTeam.Core.Tasks;
+using Tuckfirtle.Core.Utility;
 
 namespace Tuckfirtle.Core.Network.P2P
 {
-    public class PacketNetworkStream : IDisposable
+    public class PacketNetworkStream : IDisposable, IAsyncDisposable
     {
+        private class ReadPacketState
+        {
+            private readonly NetworkStream _networkStream;
+            private readonly byte[] _networkGuid;
+            private readonly CancellationToken _cancellationToken;
+
+            public ReadPacketState(NetworkStream networkStream, byte[] networkGuid, CancellationToken cancellationToken)
+            {
+                _networkStream = networkStream;
+                _networkGuid = networkGuid;
+                _cancellationToken = cancellationToken;
+            }
+
+            public Packet? Execute()
+            {
+                var networkStream = _networkStream;
+                var networkGuid = _networkGuid;
+                var cancellationToken = _cancellationToken;
+                var packetParser = Packet.Parser;
+
+                do
+                {
+                    try
+                    {
+                        var packet = packetParser.ParseDelimitedFrom(networkStream);
+                        if (!packet.PacketNetwork.Span.SequenceEqual(networkGuid) || packet.PacketKeepAliveDuration < 1) continue;
+                        return packet;
+                    }
+                    catch (InvalidProtocolBufferException)
+                    {
+                        // If the packet is invalid or malformed, skip and retry again.
+                    }
+                } while (!cancellationToken.IsCancellationRequested);
+
+                return null;
+            }
+        }
+
+        private class WritePacketState
+        {
+            private readonly NetworkStream _stream;
+            private readonly Packet _packet;
+
+            public WritePacketState(NetworkStream stream, Packet packet)
+            {
+                _stream = stream;
+                _packet = packet;
+            }
+
+            public void Execute()
+            {
+                _packet.WriteDelimitedTo(_stream);
+            }
+        }
+
         private readonly NetworkStream _networkStream;
 
         private readonly byte[] _networkGuid;
 
         private readonly SemaphoreSlim _readSemaphoreSlim = new SemaphoreSlim(1, 1);
-
         private readonly SemaphoreSlim _writeSemaphoreSlim = new SemaphoreSlim(1, 1);
+
+        private bool _isDisposed;
 
         public PacketNetworkStream(NetworkStream networkStream, NetworkType networkType)
         {
             _networkStream = networkStream;
-
-            switch (networkType)
+            _networkGuid = networkType switch
             {
-                case NetworkType.Testnet:
-                    _networkGuid = CoreConfiguration.TestnetNetworkGuid.ToByteArray();
-                    break;
-
-                case NetworkType.Mainnet:
-                    _networkGuid = CoreConfiguration.MainnetNetworkGuid.ToByteArray();
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(networkType), networkType, null);
-            }
+                NetworkType.Testnet => CoreConfiguration.TestnetNetworkGuid.ToByteArray(),
+                NetworkType.Mainnet => CoreConfiguration.MainnetNetworkGuid.ToByteArray(),
+                var _ => throw new ArgumentOutOfRangeException(nameof(networkType), networkType, null)
+            };
         }
 
-        public async Task<Packet> ReadPacketAsync(CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Read packet from the network stream.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="OperationCanceledException"><paramref name="cancellationToken" /> was canceled.</exception>
+        public async Task<Packet?> ReadPacketAsync(CancellationToken cancellationToken = default)
         {
             await _readSemaphoreSlim.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
-                var readingTask = TaskState.Run<(NetworkStream, Func<Packet, bool>, CancellationToken), Packet>((_networkStream, VerifyPacket, cancellationToken), state =>
-                {
-                    var (networkStream, verifyPacketFunction, cancellationTokenState) = state;
-
-                    do
-                    {
-                        try
-                        {
-                            var packet = Packet.Parser.ParseDelimitedFrom(networkStream);
-
-                            if (!verifyPacketFunction(packet))
-                                continue;
-
-                            return packet;
-                        }
-                        catch (InvalidProtocolBufferException)
-                        {
-                            // If the packet is invalid or malformed, skip and retry again.
-                        }
-                    } while (!cancellationTokenState.CanBeCanceled || !cancellationTokenState.IsCancellationRequested);
-
-                    return null;
-                }, cancellationToken);
-
-                var resultingTask = await Task.WhenAny(readingTask, Task.Delay(-1, cancellationToken)).ConfigureAwait(false);
-
-                if (resultingTask != readingTask)
-                    return null;
-
-                var result = await readingTask.ConfigureAwait(false);
-                return result;
+                var readPacketState = new ReadPacketState(_networkStream, _networkGuid, cancellationToken);
+                Task<Packet?> readPacketTask = _networkStream.DataAvailable ? Task.Run(readPacketState.Execute, cancellationToken) : Task.Factory.StartNew(readPacketState.Execute, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                return await TaskUtility.WaitUntilCancellation(readPacketTask, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -84,19 +110,22 @@ namespace Tuckfirtle.Core.Network.P2P
             }
         }
 
+        /// <summary>
+        /// Write packet into the network stream.
+        /// </summary>
+        /// <param name="packet">Packet to write into the network stream.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="OperationCanceledException"><paramref name="cancellationToken" /> was canceled.</exception>
         public async Task WritePacketAsync(Packet packet, CancellationToken cancellationToken = default)
         {
             await _writeSemaphoreSlim.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
-                var writingTask = TaskState.Run((packet, _networkStream), state =>
-                {
-                    var (packetState, networkStream) = state;
-                    packetState.WriteDelimitedTo(networkStream);
-                }, cancellationToken);
-
-                await Task.WhenAny(writingTask, Task.Delay(-1, cancellationToken)).ConfigureAwait(false);
+                var writePacketState = new WritePacketState(_networkStream, packet);
+                var writePacketTask = Task.Run(writePacketState.Execute, cancellationToken);
+                await TaskUtility.WaitUntilCancellation(writePacketTask, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -104,31 +133,28 @@ namespace Tuckfirtle.Core.Network.P2P
             }
         }
 
-        private bool VerifyPacket(Packet packet)
-        {
-            // Step 1: Verify Packet Network
-            if (packet.PacketNetwork.Length != _networkGuid.Length)
-                return false;
-
-            var packetNetwork = packet.PacketNetwork;
-
-            for (var i = 0; i < 16; i++)
-            {
-                if (packetNetwork[i] == _networkGuid[i])
-                    continue;
-
-                return false;
-            }
-
-            // Step 2: Verify Packet Keep Alive Duration
-            return packet.PacketKeepAliveDuration > 0;
-        }
-
         public void Dispose()
         {
-            _networkStream?.Dispose();
-            _readSemaphoreSlim?.Dispose();
-            _writeSemaphoreSlim?.Dispose();
+            if (_isDisposed) return;
+            _isDisposed = true;
+
+            Dispose(false);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            if (_isDisposed) return;
+            _isDisposed = true;
+
+            await _networkStream.DisposeAsync().ConfigureAwait(false);
+            Dispose(true);
+        }
+
+        private void Dispose(bool asyncDispose)
+        {
+            if (!asyncDispose) _networkStream.Dispose();
+            _readSemaphoreSlim.Dispose();
+            _writeSemaphoreSlim.Dispose();
         }
     }
 }

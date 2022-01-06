@@ -9,7 +9,7 @@ namespace Tuckfirtle.Core.Utility
     /// <summary>
     /// Utility class that contains all the json functions.
     /// </summary>
-    public class JsonUtility
+    public static class JsonUtility
     {
         /// <summary>Serializes the specified object to a JSON string.</summary>
         /// <param name="value">The object to serialize.</param>

@@ -28,16 +28,12 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
             "AQoPSGFuZHNoYWtlUGFja2V0EkgKIGtleV9lbmNhcHN1bGF0aW9uX21lY2hh",
             "bmlzbV90eXBlGAEgASgOMh4uS2V5RW5jYXBzdWxhdGlvbk1lY2hhbmlzbVR5",
             "cGUSJgoOaGFuZHNoYWtlX3R5cGUYAiABKA4yDi5IYW5kc2hha2VUeXBlEhYK",
-            "DmhhbmRzaGFrZV9kYXRhGAMgASgMKosCCh1LZXlFbmNhcHN1bGF0aW9uTWVj",
-            "aGFuaXNtVHlwZRI5CjVLRVlfRU5DQVBTVUxBVElPTl9NRUNIQU5JU01fVFlQ",
-            "RV9TSUtFX1A0MzRfQ09NUFJFU1NFRBAAEjkKNUtFWV9FTkNBUFNVTEFUSU9O",
-            "X01FQ0hBTklTTV9UWVBFX1NJS0VfUDUwM19DT01QUkVTU0VEEAESOQo1S0VZ",
-            "X0VOQ0FQU1VMQVRJT05fTUVDSEFOSVNNX1RZUEVfU0lLRV9QNjEwX0NPTVBS",
-            "RVNTRUQQAhI5CjVLRVlfRU5DQVBTVUxBVElPTl9NRUNIQU5JU01fVFlQRV9T",
-            "SUtFX1A3NTFfQ09NUFJFU1NFRBADKk4KDUhhbmRzaGFrZVR5cGUSHQoZSEFO",
-            "RFNIQUtFX1RZUEVfUFVCTElDX0tFWRAAEh4KGkhBTkRTSEFLRV9UWVBFX0NJ",
-            "UEhFUl9URVhUEAFCJqoCI1R1Y2tmaXJ0bGUuQ29yZS5OZXR3b3JrLlAyUC5Q",
-            "YWNrZXRzYgZwcm90bzM="));
+            "DmhhbmRzaGFrZV9kYXRhGAMgASgMKlcKHUtleUVuY2Fwc3VsYXRpb25NZWNo",
+            "YW5pc21UeXBlEjYKMktFWV9FTkNBUFNVTEFUSU9OX01FQ0hBTklTTV9UWVBF",
+            "X05UUlVfSFBTXzQwOTZfODIxEAAqTgoNSGFuZHNoYWtlVHlwZRIdChlIQU5E",
+            "U0hBS0VfVFlQRV9QVUJMSUNfS0VZEAASHgoaSEFORFNIQUtFX1RZUEVfQ0lQ",
+            "SEVSX1RFWFQQAUImqgIjVHVja2ZpcnRsZS5Db3JlLk5ldHdvcmsuUDJQLlBh",
+            "Y2tldHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType), typeof(global::Tuckfirtle.Core.Network.P2P.Packets.HandshakeType), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -49,10 +45,7 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
   }
   #region Enums
   public enum KeyEncapsulationMechanismType {
-    [pbr::OriginalName("KEY_ENCAPSULATION_MECHANISM_TYPE_SIKE_P434_COMPRESSED")] SikeP434Compressed = 0,
-    [pbr::OriginalName("KEY_ENCAPSULATION_MECHANISM_TYPE_SIKE_P503_COMPRESSED")] SikeP503Compressed = 1,
-    [pbr::OriginalName("KEY_ENCAPSULATION_MECHANISM_TYPE_SIKE_P610_COMPRESSED")] SikeP610Compressed = 2,
-    [pbr::OriginalName("KEY_ENCAPSULATION_MECHANISM_TYPE_SIKE_P751_COMPRESSED")] SikeP751Compressed = 3,
+    [pbr::OriginalName("KEY_ENCAPSULATION_MECHANISM_TYPE_NTRU_HPS_4096_821")] NtruHps4096821 = 0,
   }
 
   public enum HandshakeType {
@@ -63,7 +56,11 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
   #endregion
 
   #region Messages
-  public sealed partial class HandshakePacket : pb::IMessage<HandshakePacket> {
+  public sealed partial class HandshakePacket : pb::IMessage<HandshakePacket>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<HandshakePacket> _parser = new pb::MessageParser<HandshakePacket>(() => new HandshakePacket());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -101,7 +98,7 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
 
     /// <summary>Field number for the "key_encapsulation_mechanism_type" field.</summary>
     public const int KeyEncapsulationMechanismTypeFieldNumber = 1;
-    private global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType keyEncapsulationMechanismType_ = global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.SikeP434Compressed;
+    private global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType keyEncapsulationMechanismType_ = global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.NtruHps4096821;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType KeyEncapsulationMechanismType {
       get { return keyEncapsulationMechanismType_; }
@@ -154,7 +151,7 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.SikeP434Compressed) hash ^= KeyEncapsulationMechanismType.GetHashCode();
+      if (KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.NtruHps4096821) hash ^= KeyEncapsulationMechanismType.GetHashCode();
       if (HandshakeType != global::Tuckfirtle.Core.Network.P2P.Packets.HandshakeType.PublicKey) hash ^= HandshakeType.GetHashCode();
       if (HandshakeData.Length != 0) hash ^= HandshakeData.GetHashCode();
       if (_unknownFields != null) {
@@ -170,7 +167,10 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.SikeP434Compressed) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.NtruHps4096821) {
         output.WriteRawTag(8);
         output.WriteEnum((int) KeyEncapsulationMechanismType);
       }
@@ -185,12 +185,34 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.NtruHps4096821) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) KeyEncapsulationMechanismType);
+      }
+      if (HandshakeType != global::Tuckfirtle.Core.Network.P2P.Packets.HandshakeType.PublicKey) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) HandshakeType);
+      }
+      if (HandshakeData.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteBytes(HandshakeData);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.SikeP434Compressed) {
+      if (KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.NtruHps4096821) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) KeyEncapsulationMechanismType);
       }
       if (HandshakeType != global::Tuckfirtle.Core.Network.P2P.Packets.HandshakeType.PublicKey) {
@@ -210,7 +232,7 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
       if (other == null) {
         return;
       }
-      if (other.KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.SikeP434Compressed) {
+      if (other.KeyEncapsulationMechanismType != global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType.NtruHps4096821) {
         KeyEncapsulationMechanismType = other.KeyEncapsulationMechanismType;
       }
       if (other.HandshakeType != global::Tuckfirtle.Core.Network.P2P.Packets.HandshakeType.PublicKey) {
@@ -224,6 +246,9 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -244,7 +269,34 @@ namespace Tuckfirtle.Core.Network.P2P.Packets {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            KeyEncapsulationMechanismType = (global::Tuckfirtle.Core.Network.P2P.Packets.KeyEncapsulationMechanismType) input.ReadEnum();
+            break;
+          }
+          case 16: {
+            HandshakeType = (global::Tuckfirtle.Core.Network.P2P.Packets.HandshakeType) input.ReadEnum();
+            break;
+          }
+          case 26: {
+            HandshakeData = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2019, The Tuckfirtle Developers
+﻿// Copyright (C) 2020, The Tuckfirtle Developers
 // 
 // Please see the included LICENSE file for more information.
 
@@ -22,13 +22,13 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA256Managed())
-                    return sha.ComputeHash(buffer);
+                using var sha = new SHA256Managed();
+                return sha.ComputeHash(buffer);
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA256CryptoServiceProvider())
-                    return sha.ComputeHash(buffer);
+                using var sha = new SHA256CryptoServiceProvider();
+                return sha.ComputeHash(buffer);
             }
         }
 
@@ -46,13 +46,13 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA256Managed())
-                    Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 32);
+                using var sha = new SHA256Managed();
+                Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 32);
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA256CryptoServiceProvider())
-                    Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 32);
+                using var sha = new SHA256CryptoServiceProvider();
+                Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 32);
             }
         }
 
@@ -68,18 +68,20 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA256Managed())
+                using var sha = new SHA256Managed();
+
+                fixed (byte* resultPtr = sha.ComputeHash(buffer))
                 {
-                    fixed (byte* resultPtr = sha.ComputeHash(buffer))
-                        Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 32, 32);
+                    Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 32, 32);
                 }
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA256CryptoServiceProvider())
+                using var sha = new SHA256CryptoServiceProvider();
+
+                fixed (byte* resultPtr = sha.ComputeHash(buffer))
                 {
-                    fixed (byte* resultPtr = sha.ComputeHash(buffer))
-                        Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 32, 32);
+                    Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 32, 32);
                 }
             }
         }
@@ -94,13 +96,13 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA384Managed())
-                    return sha.ComputeHash(buffer);
+                using var sha = new SHA384Managed();
+                return sha.ComputeHash(buffer);
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA384CryptoServiceProvider())
-                    return sha.ComputeHash(buffer);
+                using var sha = new SHA384CryptoServiceProvider();
+                return sha.ComputeHash(buffer);
             }
         }
 
@@ -118,13 +120,13 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA384Managed())
-                    Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 48);
+                using var sha = new SHA384Managed();
+                Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 48);
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA384CryptoServiceProvider())
-                    Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 48);
+                using var sha = new SHA384CryptoServiceProvider();
+                Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 48);
             }
         }
 
@@ -140,18 +142,20 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA384Managed())
+                using var sha = new SHA384Managed();
+
+                fixed (byte* resultPtr = sha.ComputeHash(buffer))
                 {
-                    fixed (byte* resultPtr = sha.ComputeHash(buffer))
-                        Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 48, 48);
+                    Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 48, 48);
                 }
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA384CryptoServiceProvider())
+                using var sha = new SHA384CryptoServiceProvider();
+
+                fixed (byte* resultPtr = sha.ComputeHash(buffer))
                 {
-                    fixed (byte* resultPtr = sha.ComputeHash(buffer))
-                        Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 48, 48);
+                    Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 48, 48);
                 }
             }
         }
@@ -166,13 +170,13 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA512Managed())
-                    return sha.ComputeHash(buffer);
+                using var sha = new SHA512Managed();
+                return sha.ComputeHash(buffer);
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA512CryptoServiceProvider())
-                    return sha.ComputeHash(buffer);
+                using var sha = new SHA512CryptoServiceProvider();
+                return sha.ComputeHash(buffer);
             }
         }
 
@@ -190,13 +194,13 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA512Managed())
-                    Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 64);
+                using var sha = new SHA512Managed();
+                Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 64);
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA512CryptoServiceProvider())
-                    Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 64);
+                using var sha = new SHA512CryptoServiceProvider();
+                Buffer.BlockCopy(sha.ComputeHash(buffer), 0, destArray, destOffset, 64);
             }
         }
 
@@ -212,18 +216,20 @@ namespace Tuckfirtle.Core.Utility
         {
             try
             {
-                using (var sha = new SHA512Managed())
+                using var sha = new SHA512Managed();
+
+                fixed (byte* resultPtr = sha.ComputeHash(buffer))
                 {
-                    fixed (byte* resultPtr = sha.ComputeHash(buffer))
-                        Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 64, 64);
+                    Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 64, 64);
                 }
             }
             catch (InvalidOperationException)
             {
-                using (var sha = new SHA512CryptoServiceProvider())
+                using var sha = new SHA512CryptoServiceProvider();
+
+                fixed (byte* resultPtr = sha.ComputeHash(buffer))
                 {
-                    fixed (byte* resultPtr = sha.ComputeHash(buffer))
-                        Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 64, 64);
+                    Buffer.MemoryCopy(resultPtr, destArrayPtr + destOffset, 64, 64);
                 }
             }
         }

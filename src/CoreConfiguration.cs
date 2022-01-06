@@ -1,9 +1,10 @@
-﻿// Copyright (C) 2019, The Tuckfirtle Developers
+﻿// Copyright (C) 2020, The Tuckfirtle Developers
 // 
 // Please see the included LICENSE file for more information.
 
 using System;
 using Tuckfirtle.Core.Network.P2P.Header;
+using Tuckfirtle.Core.Network.P2P.Packets;
 
 namespace Tuckfirtle.Core
 {
@@ -75,7 +76,7 @@ namespace Tuckfirtle.Core
         /// <summary>
         /// Peer to peer (P2P) default port.
         /// </summary>
-        public const ushort P2PDefaultPort = 15080;
+        public const int P2PDefaultPort = 15080;
 
         /// <summary>
         /// Peer to peer (P2P) receive buffer size.
@@ -103,9 +104,14 @@ namespace Tuckfirtle.Core
         public const PacketEncryptionType P2PPacketEncryptionType = PacketEncryptionType.Aes;
 
         /// <summary>
+        /// Peer to peer (P2P) packet key encapsulation mechanism type.
+        /// </summary>
+        public const KeyEncapsulationMechanismType P2PPacketKeyEncapsulationMechanismType = KeyEncapsulationMechanismType.NtruHps4096821;
+
+        /// <summary>
         /// Remote procedural call (RPC) default port.
         /// </summary>
-        public const ushort RPCDefaultPort = 15081;
+        public const int RPCDefaultPort = 15081;
 
         /// <summary>
         /// Unique testnet network id for network communication.

@@ -44,7 +44,11 @@ namespace Tuckfirtle.Core.Network.P2P {
 
   }
   #region Messages
-  public sealed partial class Packet : pb::IMessage<Packet> {
+  public sealed partial class Packet : pb::IMessage<Packet>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Packet> _parser = new pb::MessageParser<Packet>(() => new Packet());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -193,6 +197,9 @@ namespace Tuckfirtle.Core.Network.P2P {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (PacketNetwork.Length != 0) {
         output.WriteRawTag(10);
         output.WriteBytes(PacketNetwork);
@@ -220,7 +227,41 @@ namespace Tuckfirtle.Core.Network.P2P {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (PacketNetwork.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteBytes(PacketNetwork);
+      }
+      if (PacketKeepAliveDuration != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(PacketKeepAliveDuration);
+      }
+      if (PacketCompressionType != global::Tuckfirtle.Core.Network.P2P.Header.PacketCompressionType.None) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) PacketCompressionType);
+      }
+      if (PacketEncryptionType != global::Tuckfirtle.Core.Network.P2P.Header.PacketEncryptionType.None) {
+        output.WriteRawTag(32);
+        output.WriteEnum((int) PacketEncryptionType);
+      }
+      if (PacketType != global::Tuckfirtle.Core.Network.P2P.Header.PacketType.Unknown) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) PacketType);
+      }
+      if (PacketData.Length != 0) {
+        output.WriteRawTag(50);
+        output.WriteBytes(PacketData);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -277,6 +318,9 @@ namespace Tuckfirtle.Core.Network.P2P {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -309,7 +353,46 @@ namespace Tuckfirtle.Core.Network.P2P {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            PacketNetwork = input.ReadBytes();
+            break;
+          }
+          case 16: {
+            PacketKeepAliveDuration = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            PacketCompressionType = (global::Tuckfirtle.Core.Network.P2P.Header.PacketCompressionType) input.ReadEnum();
+            break;
+          }
+          case 32: {
+            PacketEncryptionType = (global::Tuckfirtle.Core.Network.P2P.Header.PacketEncryptionType) input.ReadEnum();
+            break;
+          }
+          case 40: {
+            PacketType = (global::Tuckfirtle.Core.Network.P2P.Header.PacketType) input.ReadEnum();
+            break;
+          }
+          case 50: {
+            PacketData = input.ReadBytes();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 
